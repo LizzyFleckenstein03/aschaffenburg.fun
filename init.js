@@ -597,7 +597,20 @@ Programm erhalten haben. Wenn nicht, siehe <a href="https://www.gnu.org/licenses
 		${modelLicenses}
 		</ul>
 
-		<h3> Quellen verwendeter Bilder und Sounds</h3>
+		<h3> Quellen eigener Medien </h3>
+		<p> Lizenz für inkludierte Medien: CC BY-SA 4.0 </p>
+		<ul>
+			<li>markers/stiftskirche/image.jpg: Schülerzeichnung</li>
+			<li>markers/willigis_bruecke/image.jpg: Schülerzeichnung</li>
+			<li>markers/altstadt/image.jpg: Schülerzeichnung</li>
+			<li>markers/pompejanum/image.jpg: Schülerzeichnung</li>
+			<li>markers/kronberg/image.jpg: Schülerzeichnung</li>
+			<li>markers/pilgerbrunnen/image.jpg: TODO</li>
+			<li>Fotos (markers/*/icon.png, fireworks/*.jpeg): Ruth Pabst</li>
+			<li>Gesprochene Texte (markers/*/sound.mp3): Schülerinnen und Schüler der Klasse 4a der Christian-Schad-Schule</li>
+		</ul>
+
+		<h3> Quellen verwendeter Medien</h3>
 		<ul>
 			<li><a href="https://commons.wikimedia.org/wiki/File:Cog_font_awesome.svg">gear.svg</a></li>
 			<li><a href="https://commons.wikimedia.org/wiki/File:Font_Awesome_5_solid_info-circle.svg">info.svg</a></li>
@@ -606,18 +619,11 @@ Programm erhalten haben. Wenn nicht, siehe <a href="https://www.gnu.org/licenses
 			<li><a href="https://de.m.wikipedia.org/wiki/Datei:Map_marker_font_awesome.svg">marker.svg</a></li>
 			<li><a href="https://de.m.wikipedia.org/wiki/Datei:Map_marker_font_awesome.svg">marker-model.svg</a> (modifiziert)</li>
 			<li><a href="https://de.wikipedia.org/wiki/Aschaffenburg#/media/Datei:Wappen_Aschaffenburg.svg">favicon.ico</a> (zu PNG konvertiert)</li>
-			<li><a href="https://de.wikipedia.org/wiki/Liudolf_(Schwaben)#/media/Datei:Otton_Mathilde_croix.jpg">markers/stiftskirche/image.jpg</a></li>
-			<li><a href="https://upload.wikimedia.org/wikipedia/commons/8/81/Willigis_moskau.jpg">markers/willigis_bruecke/image.jpg</a></li>
-			<li>markers/altstadt/image.jpg: Zeichnung einer Schülerin</li>
 			<li><a href="https://de.wikipedia.org/wiki/Georg_Ridinger#/media/Datei:Georg_Ridinger.jpg">markers/schloss/image.jpg</a></li>
-			<li><a href="https://de.wikipedia.org/wiki/Johann_Schweikhard_von_Cronberg#/media/Datei:Johann-Schweickard-von-Kron.jpg">markers/kronberg/image.jpg</a></li>
-			<li>markers/pilger/image.jpg: TODO</li>
 			<li><a href="https://de.wikipedia.org/wiki/Friedrich_Karl_Joseph_von_Erthal#/media/Datei:Friedrich_Carl_von_Erthal.jpg">markers/schoental/image.jpg</a></li>
 			<li><a href="https://de.wikipedia.org/wiki/Karl_Theodor_von_Dalberg#/media/Datei:Portrait_of_Karl_Theodor_von_Dalberg_by_Franz_Stirnbrand.jpg">markers/stadttheater/image.jpg</a></li>
-			<li><a href="https://de.wikipedia.org/wiki/Ludwig_I._(Bayern)#/media/Datei:Ludwig_I_of_Bavaria.jpg">markers/pompejanum/image.jpg</a></li>
-			<li>Fotos (markers/*/icon.png, fireworks/*.jpeg): © 2023 Ruth Pabst, Lizenz: CC BY-SA 4.0</li>
+			<li><a href="https://de.wikipedia.org/wiki/Albrecht_von_Brandenburg#/media/Datei:Cardinal_Albrecht_of_Brandenburg_(DE_SPSG_GKI10219).jpg">markers/schoental_ruine/image.jpg</a></li>
 			<li><a href="https://www.myinstants.com/en/instant/wrong-answer-buzzer-6983/">wrong-answer-buzzer.mp3</a></li>
-			<li>Gesprochene Texte (markers/*/sound.mp3): Schülerinnen und Schüler der Klasse 4a der Christian-Schad-Schule</li>
 		</ul>
 
 		<h3> Karten-Anbieter </h3>
@@ -626,7 +632,7 @@ Programm erhalten haben. Wenn nicht, siehe <a href="https://www.gnu.org/licenses
 		<br><br>
 	`);
 
-	// <li><a href="https://de.wikipedia.org/wiki/Albrecht_von_Brandenburg#/media/Datei:Cardinal_Albrecht_of_Brandenburg_(DE_SPSG_GKI10219).jpg>markers/schoental_ruine/image.jpg</a></li>
+	//
 
 	container.style.scrollbarColor = "#7fb82e #e4edd7";
 	container.style.height = "90%";
@@ -929,10 +935,10 @@ const triggerMarker = (marker) => {
 			onClose();
 	});
 
-	container.style.width = "calc(100% - 20px)";
-	container.style.height = "calc(100% - 20px)";
-	container.style.top = "4px";
-	container.style.left = "4px";
+	container.style.width = "calc(100% - 30px)";
+	container.style.height = "calc(100% - 30px)";
+	container.style.top = "9px";
+	container.style.left = "9px";
 
 	container.style.display = "flex";
 	container.style.flexFlow = "column";
@@ -987,7 +993,7 @@ const triggerMarker = (marker) => {
 		timeCont.style.top = "40px";
 		timeCont.style.left = "4px";
 		timeCont.style.height = "calc(100% - 80px)";
-		timeCont.style.width = "calc(100% - 8px)";
+		timeCont.style.width = "calc(100% - 12px)";
 		timeCont.style.overflow = "auto";
 		timeCont.style.scrollbarColor = "#7fb82e #d9e9c6";
 		timeCont.style.direction = "rtl";
@@ -1119,7 +1125,7 @@ const triggerMarker = (marker) => {
 							rect.removeChild(img);
 							fillMarker();
 
-							// TODO: firework, completion
+							// TODO
 						} else {
 							const rectOverlay = rect.appendChild(divOverlay());
 							const arrowOverlay = makeArrow("rgba(0, 0, 0, 0.5)");

@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8" />
-		<title>Aschaffenburg.FUN</title>
+		<title>aschaffenburg.fun</title>
 		<script src="init.js" type="module" defer></script>
 		<meta
 			name="viewport"
@@ -13,25 +13,84 @@
 				margin: 0;
 				padding: 0;
 			}
+
 			#map {
 				position: absolute;
 				top: 0;
 				bottom: 0;
 				width: 100%;
 			}
-			#reload {
-				font-size: 2em;
-				position: fixed;
-				left: 5px;
-				bottom: 5px;
+
+			@font-face {
+			  font-family: exo;
+			  src: url(exo-font/Exo-Regular.otf);
 			}
-			.maplibregl-ctrl-bottom-right {
-				display: none;
+
+			#actions-left {
+				left: 0px;
+			}
+
+			#actions-right {
+				right: 0px;
+			}
+
+			button:hover {
+				background-image: linear-gradient(rgb(255 255 255/10%) 0 0);
+			}
+
+			button:active {
+				background-image: linear-gradient(rgb(255 255 255/30%) 0 0);
+			}
+
+			.actions {
+				position: fixed;
+				bottom: 0px;
+			}
+
+			*::-webkit-scrollbar-thumb {
+				visibility: visible;
+			}
+
+			.action {
+				width: 4em;
+				height: 4em;
+				margin: 0.4em 0.4em;
+				border-radius: 10px;
+				/*border-color: #7fb82e;
+				border-style: solid;
+				border-width: 0.2em;*/
+				outline: 0.1em solid #7fb82e;
+				background-color: #d9e9c6;
+				cursor: pointer;
+				display: block;
+			}
+
+			.colorize {
+				filter: invert(55%) sepia(98%) saturate(322%) hue-rotate(43deg) brightness(97%) contrast(90%);
+			}
+
+			* {
+				font-family: exo;
 			}
 		</style>
 	</head>
 	<body>
 		<div id="map"></div>
-		<button id="reload" onclick="location.reload()">Reload</button>
+		<div id="actions-left" class="actions">
+			<div class="action" id="action-info" style="position: relative;">
+				<img class="colorize" src="info.svg" width="85%" style="position: absolute; left: 7%; top: 7%;">
+			</div>
+			<div class="action" id="action-marker">
+				<img class="colorize" src="marker.svg">
+			</div>
+		</div>
+		<div id="actions-right" class="actions">
+			<div class="action" id="action-settings">
+				<img class="colorize" src="gear.svg">
+			</div>
+			<div class="action" id="action-model">
+				<img id="model-image" width="100%" style="border-radius: 10px;">
+			</div>
+		</div>
 	</body>
 </html>

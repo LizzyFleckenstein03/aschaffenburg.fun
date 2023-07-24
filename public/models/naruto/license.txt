@@ -1,0 +1,11 @@
+Model Information:
+* title:	Naruto Rigged (HatchXR)
+* source:	https://sketchfab.com/3d-models/naruto-rigged-hatchxr-b03f67238a654141b61720d214ef1b44
+* author:	nitwit.friends (https://sketchfab.com/nitwit.friends)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Naruto Rigged (HatchXR)" (https://sketchfab.com/3d-models/naruto-rigged-hatchxr-b03f67238a654141b61720d214ef1b44) by nitwit.friends (https://sketchfab.com/nitwit.friends) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

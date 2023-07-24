@@ -1,0 +1,11 @@
+Model Information:
+* title:	First Charater Animation
+* source:	https://sketchfab.com/3d-models/first-charater-animation-3c30795345ec4acba00a3b6c5c9c0084
+* author:	mfaria4563 (https://sketchfab.com/mfaria4563)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "First Charater Animation" (https://sketchfab.com/3d-models/first-charater-animation-3c30795345ec4acba00a3b6c5c9c0084) by mfaria4563 (https://sketchfab.com/mfaria4563) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

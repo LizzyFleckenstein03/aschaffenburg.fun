@@ -1,0 +1,11 @@
+Model Information:
+* title:	Treadmill Running
+* source:	https://sketchfab.com/3d-models/treadmill-running-abca33f961684c4a8f711c728fefee93
+* author:	kiritouJert (https://sketchfab.com/Thekiritou.Fr)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Treadmill Running" (https://sketchfab.com/3d-models/treadmill-running-abca33f961684c4a8f711c728fefee93) by kiritouJert (https://sketchfab.com/Thekiritou.Fr) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

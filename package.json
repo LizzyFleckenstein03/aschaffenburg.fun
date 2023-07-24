@@ -1,7 +1,8 @@
 {
   "dependencies": {
+    "colorjs.io": "^0.4.5",
     "gl-matrix": "^3.4.3",
-    "maplibre-gl": "^3.2.0",
+    "maplibre-gl": "file:../maplibre-gl-js/maplibre-gl-3.2.0.tgz",
     "suncalc": "^1.9.0",
     "three": "^0.154.0"
   },

@@ -992,7 +992,9 @@ const timeline = ({ marker, updateHelp, body }) => {
 		});
 	}
 
+	let assigned = false;
 	const size = 32;
+
 	for (const [i, { year, name, title }] of markers.entries()) {
 		const want = year - size / 2;
 
@@ -1070,8 +1072,6 @@ const timeline = ({ marker, updateHelp, body }) => {
 			img.style.left = "10%";
 
 			if (marker && !completed[marker.name]) {
-				let assigned = false;
-
 				img.addEventListener("click", () => {
 					if (assigned) return;
 

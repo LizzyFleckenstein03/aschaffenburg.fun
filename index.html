@@ -22,8 +22,8 @@
 			}
 
 			@font-face {
-			  font-family: exo;
-			  src: url(exo-font/Exo-Regular.otf);
+				font-family: exo;
+				src: url(exo-font/Exo-Regular.otf);
 			}
 
 			#actions-left {
@@ -58,7 +58,8 @@
 			}
 
 			.colorize {
-				filter: invert(55%) sepia(98%) saturate(322%) hue-rotate(43deg) brightness(97%) contrast(90%);
+				filter: invert(55%) sepia(98%) saturate(322%) hue-rotate(43deg)
+					brightness(97%) contrast(90%);
 			}
 
 			@keyframes blink {
@@ -101,19 +102,24 @@
 	<body>
 		<div id="map"></div>
 		<div id="actions-left" class="actions">
-			<div class="action" id="action-info" style="position: relative;">
-				<img class="colorize" src="info.svg" width="85%" style="position: absolute; left: 7%; top: 7%;">
+			<div class="action" id="action-info" style="position: relative">
+				<img
+					class="colorize"
+					src="info.svg"
+					width="85%"
+					style="position: absolute; left: 7%; top: 7%"
+				/>
 			</div>
 			<div class="action" id="action-timeline">
-				<img class="colorize" src="marker.svg">
+				<img class="colorize" src="marker.svg" />
 			</div>
 		</div>
 		<div id="actions-right" class="actions">
 			<div class="action" id="action-settings">
-				<img class="colorize" src="gear.svg">
+				<img class="colorize" src="gear.svg" />
 			</div>
 			<div class="action" id="action-model">
-				<img id="model-image" width="100%" style="border-radius: 10px;">
+				<img id="model-image" width="100%" style="border-radius: 10px" />
 			</div>
 		</div>
 	</body>

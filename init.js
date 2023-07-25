@@ -11,13 +11,16 @@ const numFireworks = 10;
 
 // if something fishy happens to the local storage, errors on load could render the game unplayable
 // use try-catch to prevent this
-const storageParse = item => {
+const storageParse = (item) => {
 	try {
 		return JSON.parse(localStorage.getItem(item));
 	} catch {}
 };
 
-let target = storageParse("position") || { lng: 9.142202119898826, lat: 49.97692244755174 };
+let target = storageParse("position") || {
+	lng: 9.142202119898826,
+	lat: 49.97692244755174,
+};
 const completed = storageParse("completed") || {};
 const enable3d = localStorage.getItem("enable3d") != "false";
 let forceTouchControl = localStorage.getItem("touchcontrol") == "true";
@@ -47,9 +50,11 @@ const map = new maplibregl.Map({
 	// key leakage is part of maptiler's ecosystem *shrug*
 	// their "fix" is to allow restricting keys to certain 'Origin' headers ("pinky promise uwu")
 	// honestly api keys are cringe anyway
-	style: "https://api.maptiler.com/maps/" + (enable3d ? "streets-v2" : "bright")
-		+ "/style.json?key=DOnvuOySyPyQM83lAx0a",
-		/*{
+	style:
+		"https://api.maptiler.com/maps/" +
+		(enable3d ? "streets-v2" : "bright") +
+		"/style.json?key=DOnvuOySyPyQM83lAx0a",
+	/*{
 			version: 8,
 			sources: {
 				osm: {
@@ -118,13 +123,13 @@ const openOverlay = (close) => {
 	overlay.style.height = "100%";
 	overlay.style.backgroundColor = "rgba(0, 0, 0, 0.3)";
 	if (close)
-		overlay.addEventListener("click", evt => {
+		overlay.addEventListener("click", (evt) => {
 			if (evt.target != overlay) return;
 			if (close instanceof Function) close();
 			document.body.removeChild(overlay);
 		});
 	return overlay;
-}
+};
 
 // https://codepen.io/prisoner849/pen/abKdYgZ
 const setUV = (geometry) => {
@@ -146,7 +151,7 @@ const markers = [
 	{
 		title: "Liudolf",
 		name: "stiftskirche",
-		pos:  { lng: 9.146006727402352, lat: 49.973420131538234 },
+		pos: { lng: 9.146006727402352, lat: 49.973420131538234 },
 		year: 950,
 	},
 	{
@@ -264,8 +269,7 @@ const mapToMerc = maplibregl.MercatorCoordinate.fromLngLat;
 
 const mercToThree = ({ x, y, z }) =>
 	new THREE.Vector3(x, z, y).divideScalar(
-		mapToMerc(map.getCenter())
-			.meterInMercatorCoordinateUnits(),
+		mapToMerc(map.getCenter()).meterInMercatorCoordinateUnits(),
 	);
 
 const threeCenter = () => mercToThree(mapToMerc(map.getCenter()));
@@ -304,11 +308,14 @@ const playerModels = [
 		scale: 1.0,
 		hook: (player) => {
 			player.scene.traverse((child) => {
-				if (child.name in {
-					"base": true,
-					"lamppost": true,
-					"space": true
-				})
+				if (
+					child.name in
+					{
+						base: true,
+						lamppost: true,
+						space: true,
+					}
+				)
 					child.visible = false;
 			});
 
@@ -319,12 +326,11 @@ const playerModels = [
 			player.scene = grp;
 
 			player.walk.timeScale = 2;
-		}
+		},
 	},
 ];
 
-for (const m of playerModels)
-	m.path = "models/" + m.name.toLowerCase() + "/";
+for (const m of playerModels) m.path = "models/" + m.name.toLowerCase() + "/";
 
 const setPlayerModel = async (model) => {
 	const gltf = await new Promise((res, rej) => {
@@ -334,8 +340,7 @@ const setPlayerModel = async (model) => {
 			.load("scene.gltf", res, null, rej);
 	});
 
-	if (player)
-		scene.remove(player.scene);
+	if (player) scene.remove(player.scene);
 
 	document.getElementById("model-image").src = model.path + "preview.png";
 
@@ -366,13 +371,13 @@ const setPlayerModel = async (model) => {
 	player.scene.scale.setScalar(model.scale * playerScale);
 
 	player.mixer = new THREE.AnimationMixer(player.scene);
-	player.walk = player.mixer.clipAction(player.animations[model.animationIndex || 0]);
+	player.walk = player.mixer.clipAction(
+		player.animations[model.animationIndex || 0],
+	);
 
-	if (model.hook)
-		model.hook(player);
+	if (model.hook) model.hook(player);
 
-	if (!player.doStop)
-		player.walk.play();
+	if (!player.doStop) player.walk.play();
 
 	scene.add(player.scene);
 };
@@ -399,7 +404,7 @@ const openContainer = (close, center) => {
 	}
 
 	return [overlay, container];
-}
+};
 
 const divOverlay = () => {
 	const overlay = document.createElement("div");
@@ -466,8 +471,8 @@ const modelSelectionUI = (canClose) => {
 		const img = td.appendChild(document.createElement("img"));
 		img.src = model.path + "preview.png";
 		img.style.width = "100%";
-		img.style.maxWidth = (100/perRow) + "%";
-		img.style.maxHeight = (70/Math.ceil(playerModels.length/perRow)) + "vh";
+		img.style.maxWidth = 100 / perRow + "%";
+		img.style.maxHeight = 70 / Math.ceil(playerModels.length / perRow) + "vh";
 
 		td.appendChild(document.createElement("p")).innerText = model.name;
 	}
@@ -482,10 +487,8 @@ const modelSelectionUI = (canClose) => {
 	const modelName = localStorage.getItem("model");
 	const model = modelName && playerModels.find((m) => m.name == modelName);
 
-	if (model)
-		setPlayerModel(model);
-	else
-		modelSelectionUI();
+	if (model) setPlayerModel(model);
+	else modelSelectionUI();
 }
 
 const htmlContainer = (headline, htmlContent) => {
@@ -503,7 +506,9 @@ const htmlContainer = (headline, htmlContent) => {
 };
 
 document.getElementById("action-settings").addEventListener("click", () => {
-	const [overlay, container, content] = htmlContainer("Einstellungen", `
+	const [overlay, container, content] = htmlContainer(
+		"Einstellungen",
+		`
 		<h2>3D-Modus</h2>
 		<p>Im 3D-Modus werden Gebäude dreidimensional auf der Karte angezeigt. Auf leistungsschwachen Geräten kann das zu Leistungsproblemen führen. Nach Änderung dieser Einstellung ist ein Neustart des Spiels notwendig.</p>
 
@@ -522,7 +527,8 @@ document.getElementById("action-settings").addEventListener("click", () => {
 
 		<br>
 		<br>
-	`);
+	`,
+	);
 
 	const buttonClose = document.getElementById("close-settings");
 	const boxEnable3d = document.getElementById("checkbox-enable3d");
@@ -537,8 +543,7 @@ document.getElementById("action-settings").addEventListener("click", () => {
 			buttonClose.innerText = "Speichern und Neustarten";
 		else if (boxTouchControl.checked != touchControl())
 			buttonClose.innerText = "Speichern und Schließen";
-		else
-			buttonClose.innerText = "Schließen";
+		else buttonClose.innerText = "Schließen";
 	};
 
 	boxEnable3d.addEventListener("input", updateCloseButton);
@@ -547,7 +552,10 @@ document.getElementById("action-settings").addEventListener("click", () => {
 	buttonClose.addEventListener("click", () => {
 		localStorage.setItem("enable3d", boxEnable3d.checked.toString());
 		if (!gpsError)
-			localStorage.setItem("touchcontrol", (forceTouchControl = boxTouchControl.checked).toString());
+			localStorage.setItem(
+				"touchcontrol",
+				(forceTouchControl = boxTouchControl.checked).toString(),
+			);
 
 		if (boxEnable3d.checked != enable3d) {
 			location.reload();
@@ -561,10 +569,14 @@ import licenseFile from "./LICENSE?url";
 
 document.getElementById("action-info").addEventListener("click", () => {
 	const modelLicenses = playerModels
-		.map(({ name, path }) => `<li><a href="${path}license.txt">${name}</a></li>`)
+		.map(
+			({ name, path }) => `<li><a href="${path}license.txt">${name}</a></li>`,
+		)
 		.join("");
 
-	const [overlay, container, content] = htmlContainer("Informationen zum Spiel", `
+	const [overlay, container, content] = htmlContainer(
+		"Informationen zum Spiel",
+		`
 		<h2> Entwicklung </h2>
 		<ulasd>
 			<span> <b>Idee und Leitung:</b> Ruth Pabst </span><br>
@@ -632,7 +644,8 @@ Programm erhalten haben. Wenn nicht, siehe <a href="https://www.gnu.org/licenses
 		<a href="https://www.maptiler.com/copyright/">© MapTiler</a> <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors</a>
 
 		<br><br>
-	`);
+	`,
+	);
 
 	//
 
@@ -641,7 +654,7 @@ Programm erhalten haben. Wenn nicht, siehe <a href="https://www.gnu.org/licenses
 	container.style.overflow = "scroll";
 	container.style.width = "95%";
 	container.style.left = "calc(2.5% - 5px)";
-})
+});
 
 window.modelSelectionUI = modelSelectionUI;
 
@@ -833,7 +846,10 @@ const render = (gl, mercViewProj) => {
 		const close = rlerp(40, 60, marker.obj.position.length());
 
 		marker.obj.children[0].material.color = new THREE.Color().fromArray(
-			new Color("darkblue").mix(new Color("#2c88ff"), close, {space: "hwb", outputSpace: "srgb"}).srgb
+			new Color("darkblue").mix(new Color("#2c88ff"), close, {
+				space: "hwb",
+				outputSpace: "srgb",
+			}).srgb,
 		);
 		marker.reachable = close < 0.5;
 	}
@@ -851,10 +867,14 @@ map.on("style.load", () => {
 			renderingMode: "3d",
 			render,
 		},
-		map.getStyle().layers.find(layer => layer.type in {
-			"fill-extrusion": true,
-			"symbol": true,
-		})?.id,
+		map.getStyle().layers.find(
+			(layer) =>
+				layer.type in
+				{
+					"fill-extrusion": true,
+					symbol: true,
+				},
+		)?.id,
 	);
 });
 
@@ -876,8 +896,7 @@ let playerAnimDuration = 0;
 		if (playerAnimDuration <= 0) {
 			if (player) {
 				player.walk.paused = true;
-				if (player.doStop)
-					player.walk.stop();
+				if (player.doStop) player.walk.stop();
 			}
 			return;
 		}
@@ -960,7 +979,7 @@ const timelineSkeleton = (title, close) => {
 	return { overlay, container, header, headline, addButton, body };
 };
 
-const markerImage = name => {
+const markerImage = (name) => {
 	const img = document.createElement("img");
 	img.alt = "Lädt...";
 	img.src = "markers/" + name + "/image.jpg";
@@ -973,7 +992,7 @@ const markerImage = name => {
 	return img;
 };
 
-const timeline = ({ marker, updateHelp, body,  }) => {
+const timeline = ({ marker, updateHelp, body }) => {
 	const outer = body.appendChild(document.createElement("div"));
 	outer.style.height = "calc(100% - 1em)";
 	outer.style.width = "90%";
@@ -998,7 +1017,7 @@ const timeline = ({ marker, updateHelp, body,  }) => {
 	for (let i = startYear; i <= 1900; i += 5) {
 		const timestamp = inner.appendChild(document.createElement("span"));
 		timestamp.style.position = "absolute";
-		timestamp.style.top = (i-startYear) * pxPerYear + "px";
+		timestamp.style.top = (i - startYear) * pxPerYear + "px";
 		timestamp.style.left = "0.5em";
 		timestamp.style.width = "2.5em";
 		timestamp.style.direction = "ltr";
@@ -1029,31 +1048,30 @@ const timeline = ({ marker, updateHelp, body,  }) => {
 				top: 300 * mult,
 				behavior: "smooth",
 			});
-		})
+		});
 	}
 
 	const size = 32;
 	for (const [i, { year, name, title }] of markers.entries()) {
-		const want = year - size/2;
+		const want = year - size / 2;
 
-		const topCompromise = markers[i-1] && ((year+markers[i-1].year)/2+1) || want;
-		const bottomCompromise = markers[i+1] && ((year+markers[i+1].year)/2-size-1) || want;
+		const topCompromise =
+			(markers[i - 1] && (year + markers[i - 1].year) / 2 + 1) || want;
+		const bottomCompromise =
+			(markers[i + 1] && (year + markers[i + 1].year) / 2 - size - 1) || want;
 
 		let offset;
-		if (topCompromise > want)
-			offset = topCompromise;
-		else if (bottomCompromise < want)
-			offset = bottomCompromise;
-		else
-			offset = want;
+		if (topCompromise > want) offset = topCompromise;
+		else if (bottomCompromise < want) offset = bottomCompromise;
+		else offset = want;
 
-		const color = "hsla(" + (i/markers.length*360) + ",100%,50%,0.5)";
+		const color = "hsla(" + (i / markers.length) * 360 + ",100%,50%,0.5)";
 
 		const rect = inner.appendChild(document.createElement("div"));
 		rect.style.position = "absolute";
-		rect.style.width = (size * pxPerYear) + "px";
-		rect.style.height = (size * pxPerYear) + "px";
-		rect.style.top = "calc(" + ((offset-startYear) * pxPerYear) + "px + 1ex)";
+		rect.style.width = size * pxPerYear + "px";
+		rect.style.height = size * pxPerYear + "px";
+		rect.style.top = "calc(" + (offset - startYear) * pxPerYear + "px + 1ex)";
 		rect.style.left = "calc(3em + 20px)";
 		rect.style.backgroundColor = color;
 		rect.style.direction = "ltr";
@@ -1086,7 +1104,7 @@ const timeline = ({ marker, updateHelp, body,  }) => {
 			arrow.style.borderBottom = "20px solid transparent";
 			arrow.style.borderRight = "20px solid " + color;
 			arrow.style.left = "-20px";
-			arrow.style.top = "calc(" + ((year-offset) * pxPerYear) + "px - 20px)";
+			arrow.style.top = "calc(" + (year - offset) * pxPerYear + "px - 20px)";
 			return arrow;
 		};
 
@@ -1129,8 +1147,13 @@ const timeline = ({ marker, updateHelp, body,  }) => {
 						fireworkOverlay.style.fontSize = "3em";
 						fireworkOverlay.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
 
-						const fireworkImg = fireworkOverlay.appendChild(document.createElement("img"));
-						fireworkImg.src = "fireworks/firework_" + Math.floor(Math.random() * numFireworks) + ".jpeg";
+						const fireworkImg = fireworkOverlay.appendChild(
+							document.createElement("img"),
+						);
+						fireworkImg.src =
+							"fireworks/firework_" +
+							Math.floor(Math.random() * numFireworks) +
+							".jpeg";
 						fireworkImg.alt = "Lädt...";
 						fireworkImg.style.maxWidth = "90%";
 						fireworkImg.style.maxHeight = "90%";
@@ -1143,7 +1166,9 @@ const timeline = ({ marker, updateHelp, body,  }) => {
 						const fireworkSound = new Audio("yay.mp3"); // TODO: self-produced yay sound
 
 						fireworkImg.addEventListener("load", () => {
-							const correct = fireworkOverlay.appendChild(document.createElement("span"));
+							const correct = fireworkOverlay.appendChild(
+								document.createElement("span"),
+							);
 							correct.innerText = "RICHTIG";
 							correct.style.position = "absolute";
 							correct.style.transform = "translateX(-50%)";
@@ -1195,9 +1220,10 @@ const triggerMarker = (marker) => {
 	});
 	audio.play();
 
-	const { overlay, container, header, headline, addButton, body } = timelineSkeleton(marker.title, () => {
-		audio.pause();
-	});
+	const { overlay, container, header, headline, addButton, body } =
+		timelineSkeleton(marker.title, () => {
+			audio.pause();
+		});
 
 	const skip = addButton("Überspringen", () => {
 		audio.pause();
@@ -1216,15 +1242,18 @@ const triggerMarker = (marker) => {
 			triggerMarker(marker);
 		});
 
-		const help = header.insertBefore(document.createElement("p"), header.firstChild);
+		const help = header.insertBefore(
+			document.createElement("p"),
+			header.firstChild,
+		);
 		help.textAlign = "left";
 		help.style.width = "90%";
 
 		const updateHelp = () => {
 			help.innerHTML = completed[marker.name]
-				 ? `Du hast ${marker.title} in der Zeitleiste eingeordnet.`
-				 : `<b>Ordne ${marker.title} auf der Zeitleiste ein!</b>`;
-				 // <br> Scrolle oder verwende die 'Früher'- und 'Später'-Knöpfe um den richtigen Ausschnitt in der Zeitleiste zu finden, dann tippe auf das passende Fragezeichen!
+				? `Du hast ${marker.title} in der Zeitleiste eingeordnet.`
+				: `<b>Ordne ${marker.title} auf der Zeitleiste ein!</b>`;
+			// <br> Scrolle oder verwende die 'Früher'- und 'Später'-Knöpfe um den richtigen Ausschnitt in der Zeitleiste zu finden, dann tippe auf das passende Fragezeichen!
 		};
 		updateHelp();
 
@@ -1247,16 +1276,11 @@ const click = (evt) => {
 	const camInverseProjection = new THREE.Matrix4()
 		.copy(camera.projectionMatrix)
 		.invert();
-	const cameraPosition = new THREE.Vector3().applyMatrix4(
-		camInverseProjection,
-	);
+	const cameraPosition = new THREE.Vector3().applyMatrix4(camInverseProjection);
 	const mousePosition = new THREE.Vector3(mouse.x, mouse.y, 1).applyMatrix4(
 		camInverseProjection,
 	);
-	const viewDirection = mousePosition
-		.clone()
-		.sub(cameraPosition)
-		.normalize();
+	const viewDirection = mousePosition.clone().sub(cameraPosition).normalize();
 
 	raycaster.set(cameraPosition, viewDirection);
 
@@ -1271,8 +1295,7 @@ const click = (evt) => {
 		}
 	}
 
-	if (touchControl())
-		setTarget(evt.lngLat);
+	if (touchControl()) setTarget(evt.lngLat);
 };
 
 map.on("click", click);
@@ -1280,8 +1303,7 @@ map.on("touched", click);
 
 const watchGeo = navigator.geolocation.watchPosition(
 	({ coords: { longitude: lng, latitude: lat } }) => {
-		if (!touchControl())
-			setTarget({ lng, lat });
+		if (!touchControl()) setTarget({ lng, lat });
 	},
 	(err) => {
 		navigator.geolocation.clearWatch(watchGeo);

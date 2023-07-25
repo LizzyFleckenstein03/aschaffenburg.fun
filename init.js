@@ -7,6 +7,8 @@ import * as SunCalc from "suncalc";
 import { vec3, mat4, vec4 } from "gl-matrix";
 import Color from "colorjs.io";
 
+const numFireworks = 10;
+
 // if something fishy happens to the local storage, errors on load could render the game unplayable
 // use try-catch to prevent this
 const storageParse = item => {
@@ -16,11 +18,10 @@ const storageParse = item => {
 };
 
 let target = storageParse("position") || { lng: 9.142202119898826, lat: 49.97692244755174 };
-let completed = storageParse("completed") || {};
-
+const completed = storageParse("completed") || {};
 const enable3d = localStorage.getItem("enable3d") != "false";
-
 let forceTouchControl = localStorage.getItem("touchcontrol") == "true";
+
 let gpsError = null;
 
 const touchControl = () => {
@@ -244,7 +245,7 @@ new SVGLoader().load("marker-model.svg", (data) => {
 
 		const texture = textures.load("markers/" + marker.name + "/icon.png");
 		texture.flipY = false;
-		texture.encoding = THREE.sRGBEncoding;
+		texture.colorSpace = THREE.SRGBColorSpace;
 
 		const material = marker.obj.children[1].material;
 		material.map = texture;
@@ -456,7 +457,7 @@ const modelSelectionUI = (canClose) => {
 			loadText.style.verticalAlign = "middle";
 
 			setPlayerModel(model).then(() => {
-				document.body.removeChild(overlay);
+				overlay.remove();
 			});
 		});
 
@@ -517,7 +518,7 @@ document.getElementById("action-settings").addEventListener("click", () => {
 		<br>
 		<br>
 
-		<button id="close-settings" style="width: 100%; background-color: #bbeb82; border-color: #7fb82e; border-style: solid; font-size: 1em; border-radius: 10px; height: 2em">Schließen</button>
+		<button id="close-settings" style="width: 100%" class="ui-button button-overlay">Schließen</button>
 
 		<br>
 		<br>
@@ -551,7 +552,7 @@ document.getElementById("action-settings").addEventListener("click", () => {
 		if (boxEnable3d.checked != enable3d) {
 			location.reload();
 		} else {
-			document.body.removeChild(overlay);
+			overlay.remove();
 		}
 	});
 });
@@ -623,7 +624,8 @@ Programm erhalten haben. Wenn nicht, siehe <a href="https://www.gnu.org/licenses
 			<li><a href="https://de.wikipedia.org/wiki/Friedrich_Karl_Joseph_von_Erthal#/media/Datei:Friedrich_Carl_von_Erthal.jpg">markers/schoental/image.jpg</a></li>
 			<li><a href="https://de.wikipedia.org/wiki/Karl_Theodor_von_Dalberg#/media/Datei:Portrait_of_Karl_Theodor_von_Dalberg_by_Franz_Stirnbrand.jpg">markers/stadttheater/image.jpg</a></li>
 			<li><a href="https://de.wikipedia.org/wiki/Albrecht_von_Brandenburg#/media/Datei:Cardinal_Albrecht_of_Brandenburg_(DE_SPSG_GKI10219).jpg">markers/schoental_ruine/image.jpg</a></li>
-			<li><a href="https://www.myinstants.com/en/instant/wrong-answer-buzzer-6983/">wrong-answer-buzzer.mp3</a></li>
+			<li><a href="https://www.myinstants.com/en/instant/wrong-answer-buzzer-6983/">nope.mp3</a></li>
+			<li><a href="https://www.myinstants.com/en/instant/yay_kids/">yay.mp3</a></li>
 		</ul>
 
 		<h3> Karten-Anbieter </h3>
@@ -913,249 +915,328 @@ const setTarget = (pos) => {
 	localStorage.setItem("position", JSON.stringify((target = pos)));
 };
 
-function getHeight(el, type) {
-	return el.offsetWidth + parseInt(s.getPropertyValue('margin-left')) + parseInt(s.getPropertyValue('margin-right'));
-}
-
-const triggerMarker = (marker) => {
-	let finishAudio;
-	let onClose;
-
-	const audio = new Audio("markers/" + marker.name + "/sound.mp3");
-	audio.addEventListener("ended", () => {
-		finishAudio();
-		// document.body.removeChild(overlay);
-	});
-	audio.play();
-
-	const [overlay, container] = openContainer(() => {
-		audio.pause();
-
-		if (onClose)
-			onClose();
-	});
-
+const timelineSkeleton = (title, close) => {
+	const [overlay, container] = openContainer(close);
 	container.style.width = "calc(100% - 30px)";
 	container.style.height = "calc(100% - 30px)";
 	container.style.top = "9px";
 	container.style.left = "9px";
-
 	container.style.display = "flex";
 	container.style.flexFlow = "column";
 
 	const header = container.appendChild(document.createElement("div"));
 
 	const headline = header.appendChild(document.createElement("h1"));
-	headline.innerHTML = marker.title;
+	headline.innerHTML = title;
 	headline.style.flex = "0 1 auto";
-	headline.style.fontSize = "1.5em";
+	headline.style.width = "90%";
 
-	const remainCont = container.appendChild(document.createElement("div"));
-	remainCont.style.flex = "1";
+	const buttons = header.appendChild(document.createElement("div"));
+	buttons.style.width = "90%";
+	buttons.style.display = "flex";
+	buttons.style.flexDirection = "row";
+	buttons.style.justifyContent = "center";
+	buttons.style.gap = "5px";
+	buttons.style.marginBottom = "0.5em";
 
-	const markerImage = name => {
-		const img = document.createElement("img");
+	const addButton = (text, cb) => {
+		const button = buttons.appendChild(document.createElement("button"));
+		button.innerText = text;
+		button.style.flex = "1";
+		button.classList.add("ui-button");
+		button.classList.add("button-overlay");
+		button.addEventListener("click", cb);
+		return button;
+	};
 
-		img.alt = "Lädt...";
-		img.src = "markers/" + name + "/image.jpg";
-		img.style.height = "0";
-		img.style.minHeight = "90%";
-		img.style.width = "0";
-		img.style.minWidth = "90%";
-		img.style.objectFit = "scale-down";
+	addButton("Schließen", () => {
+		close?.();
+		overlay.remove();
+	});
 
-		return img;
+	const body = container.appendChild(document.createElement("div"));
+	body.style.flex = "1";
+
+	return { overlay, container, header, headline, addButton, body };
+};
+
+const markerImage = name => {
+	const img = document.createElement("img");
+	img.alt = "Lädt...";
+	img.src = "markers/" + name + "/image.jpg";
+	img.style.height = "0";
+	img.style.minHeight = "90%";
+	img.style.width = "0";
+	img.style.minWidth = "90%";
+	img.style.objectFit = "scale-down";
+	img.style.fontSize = "1.5em";
+	return img;
+};
+
+const timeline = ({ marker, updateHelp, body,  }) => {
+	const outer = body.appendChild(document.createElement("div"));
+	outer.style.height = "calc(100% - 1em)";
+	outer.style.width = "90%";
+	outer.style.position = "relative";
+	outer.style.backgroundColor = "#d9e9c6";
+	outer.style.borderRadius = "10px";
+	outer.style.boxShadow = "0 0 0 4px inset #7fb82e";
+
+	const inner = outer.appendChild(document.createElement("div"));
+	inner.style.position = "absolute";
+	inner.style.top = "40px";
+	inner.style.left = "4px";
+	inner.style.height = "calc(100% - 80px)";
+	inner.style.width = "calc(100% - 12px)";
+	inner.style.overflow = "auto";
+	inner.style.scrollbarColor = "#7fb82e #d9e9c6";
+	inner.style.direction = "rtl";
+
+	const pxPerYear = 5;
+	const startYear = 900;
+
+	for (let i = startYear; i <= 1900; i += 5) {
+		const timestamp = inner.appendChild(document.createElement("span"));
+		timestamp.style.position = "absolute";
+		timestamp.style.top = (i-startYear) * pxPerYear + "px";
+		timestamp.style.left = "0.5em";
+		timestamp.style.width = "2.5em";
+		timestamp.style.direction = "ltr";
+
+		const showNum = i % 25 == 0;
+		timestamp.innerText = showNum ? i : "-";
+		timestamp.style.textAlign = "right";
 	}
 
-	const img = remainCont.appendChild(markerImage(marker.name));
+	for (const [dir, title, mult] of [
+		["top", "Früher", -1],
+		["bottom", "Später", 1], // 🥺
+	]) {
+		const button = outer.appendChild(document.createElement("button"));
+		button.innerText = title;
+		button.style[dir] = "0px";
+		button.style.position = "absolute";
+		button.style.left = "0px";
+		button.style.width = "100%";
+		button.style.height = "40px";
+		button.classList.add("ui-button");
 
-	finishAudio = () => {
-		remainCont.removeChild(img);
+		button.style["border-" + dir + "-left-radius"] = "7px";
+		button.style["border-" + dir + "-right-radius"] = "7px";
 
-		header.removeChild(headline);
-		const help = header.appendChild(document.createElement("p"));
-		help.textAlign = "left";
-		help.innerHTML = completed[marker.name]
-			 ? `Du hast ${marker.title} bereits in der Zeitleiste eingeordnet.`
-			 : `<b>Ordne ${marker.title} auf der Zeitleiste ein.</b>`;
-			 // <br> Scrolle oder verwende die 'Früher'- und 'Später'-Knöpfe um den richtigen Ausschnitt in der Zeitleiste zu finden, dann tippe auf das passende Fragezeichen!
+		button.addEventListener("click", () => {
+			inner.scrollBy({
+				top: 300 * mult,
+				behavior: "smooth",
+			});
+		})
+	}
 
-		const timeContOuter = remainCont.appendChild(document.createElement("div"));
-		timeContOuter.style.height = "calc(100% - 1em)";
-		timeContOuter.style.width = "90%";
-		timeContOuter.style.position = "relative";
-		timeContOuter.style.backgroundColor = "#d9e9c6";
-		timeContOuter.style.borderRadius = "10px";
-		timeContOuter.style.boxShadow = "0 0 0 4px inset #7fb82e";
+	const size = 32;
+	for (const [i, { year, name, title }] of markers.entries()) {
+		const want = year - size/2;
 
-		const timeCont = timeContOuter.appendChild(document.createElement("div"));
-		timeCont.style.position = "absolute";
-		timeCont.style.top = "40px";
-		timeCont.style.left = "4px";
-		timeCont.style.height = "calc(100% - 80px)";
-		timeCont.style.width = "calc(100% - 12px)";
-		timeCont.style.overflow = "auto";
-		timeCont.style.scrollbarColor = "#7fb82e #d9e9c6";
-		timeCont.style.direction = "rtl";
+		const topCompromise = markers[i-1] && ((year+markers[i-1].year)/2+1) || want;
+		const bottomCompromise = markers[i+1] && ((year+markers[i+1].year)/2-size-1) || want;
 
-		const pxPerYear = 5;
-		const startYear = 900;
+		let offset;
+		if (topCompromise > want)
+			offset = topCompromise;
+		else if (bottomCompromise < want)
+			offset = bottomCompromise;
+		else
+			offset = want;
 
-		for (let i = startYear; i <= 1900; i += 5) {
-			const p = timeCont.appendChild(document.createElement("span"));
-			p.style.position = "absolute";
-			p.style.top = (i-startYear) * pxPerYear + "px";
-			p.style.left = "0.5em";
-			p.style.width = "2.5em";
-			p.style.direction = "ltr";
+		const color = "hsla(" + (i/markers.length*360) + ",100%,50%,0.5)";
 
-			const showNum = i % 25 == 0;
-			p.innerText = showNum ? i : "-";
-			//p.style.textAlign = showNum ? "right" : "left";
-			p.style.textAlign = "right";
-		}
+		const rect = inner.appendChild(document.createElement("div"));
+		rect.style.position = "absolute";
+		rect.style.width = (size * pxPerYear) + "px";
+		rect.style.height = (size * pxPerYear) + "px";
+		rect.style.top = "calc(" + ((offset-startYear) * pxPerYear) + "px + 1ex)";
+		rect.style.left = "calc(3em + 20px)";
+		rect.style.backgroundColor = color;
+		rect.style.direction = "ltr";
 
-		for (const [dir, title, mult] of [
-			["top", "Früher", -1],
-			["bottom", "Später", 1], // 🥺
-		]) {
-			const button = timeContOuter.appendChild(document.createElement("button"));
-			button.innerText = title;
-			button.style[dir] = "0px";
-			button.style.position = "absolute";
-			button.style.left = "0px";
-			button.style.width = "100%";
-			button.style.height = "40px";
-			button.style.borderStyle = "none";
-			button.style.fontSize = "1em";
-			button.style.backgroundColor = "#7fb82e";
-			button.style.cursor = "pointer";
+		rect.style.display = "flex";
+		rect.style.flexFlow = "column";
 
-			button.style["border-" + dir + "-left-radius"] = "7px";
-			button.style["border-" + dir + "-right-radius"] = "7px";
+		const populateMarker = () => {
+			const remainRect = rect.appendChild(document.createElement("div"));
+			remainRect.style.flex = "1";
 
-			button.addEventListener("click", () => {
-				timeCont.scrollBy({
-					top: 300 * mult,
-					behavior: "smooth",
+			const img = remainRect.appendChild(markerImage(name));
+			img.style.minHeight = "calc(100% - 3px)";
+			img.style.minWidth = "calc(100% - 3px)";
+			img.style.position = "relative";
+			img.style.top = "3px";
+
+			const p = rect.appendChild(document.createElement("small"));
+			p.innerText = title;
+			p.style.padding = "3px";
+			p.style.flex = "0 1 auto";
+		};
+
+		const makeArrow = (color) => {
+			const arrow = rect.appendChild(document.createElement("div"));
+			arrow.style.position = "absolute";
+			arrow.style.width = "0";
+			arrow.style.height = "0";
+			arrow.style.borderTop = "20px solid transparent";
+			arrow.style.borderBottom = "20px solid transparent";
+			arrow.style.borderRight = "20px solid " + color;
+			arrow.style.left = "-20px";
+			arrow.style.top = "calc(" + ((year-offset) * pxPerYear) + "px - 20px)";
+			return arrow;
+		};
+
+		makeArrow(color);
+
+		if (completed[name]) {
+			populateMarker();
+
+			if (name == marker?.name) {
+				rect.scrollIntoView({
+					block: "center",
 				});
-			})
-		}
+				rect.style.animation = "blink 0.6s 3";
+			}
+		} else {
+			const img = rect.appendChild(document.createElement("img"));
+			img.src = "unknown.svg";
+			img.style.position = "absolute";
+			img.style.width = "80%";
+			img.style.height = "80%";
+			img.style.top = "10%";
+			img.style.left = "10%";
 
-		const size = 32;
-		for (const [i, { year, name, title }] of markers.entries()) {
-			const want = year - size/2;
+			if (marker && !completed[marker.name]) {
+				let assigned = false;
 
-			const topCompromise = markers[i-1] && ((year+markers[i-1].year)/2+1) || want;
-			const bottomCompromise = markers[i+1] && ((year+markers[i+1].year)/2-size-1) || want;
+				img.addEventListener("click", () => {
+					if (assigned) return;
 
-			let offset;
-			if (topCompromise > want)
-				offset = topCompromise;
-			else if (bottomCompromise < want)
-				offset = bottomCompromise;
-			else
-				offset = want;
+					if (name == marker.name) {
+						img.remove();
+						populateMarker();
 
-			const color = "hsla(" + (i/markers.length*360) + ",100%,50%,0.5)";
+						completed[marker.name] = true;
+						localStorage.setItem("completed", JSON.stringify(completed));
+						updateHelp?.();
 
-			const rect = timeCont.appendChild(document.createElement("div"));
-			rect.style.position = "absolute";
-			rect.style.width = (size * pxPerYear) + "px";
-			rect.style.height = (size * pxPerYear) + "px";
-			rect.style.top = "calc(" + ((offset-startYear) * pxPerYear) + "px + 1ex)";
-			rect.style.left = "calc(3em + 20px)";
-			rect.style.backgroundColor = color;
-			rect.style.direction = "ltr";
+						const fireworkOverlay = openOverlay(false);
+						fireworkOverlay.style.color = "white";
+						fireworkOverlay.style.fontSize = "3em";
+						fireworkOverlay.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
 
-			rect.style.display = "flex";
-			rect.style.flexFlow = "column";
+						const fireworkImg = fireworkOverlay.appendChild(document.createElement("img"));
+						fireworkImg.src = "fireworks/firework_" + Math.floor(Math.random() * numFireworks) + ".jpeg";
+						fireworkImg.alt = "Lädt...";
+						fireworkImg.style.maxWidth = "90%";
+						fireworkImg.style.maxHeight = "90%";
+						fireworkImg.style.top = "50%";
+						fireworkImg.style.left = "50%";
+						fireworkImg.style.position = "absolute";
+						fireworkImg.style.transform = "translate(-50%, -50%)";
+						fireworkImg.style.borderStyle = "solid";
 
-			const fillMarker = () => {
-				const remainRect = rect.appendChild(document.createElement("div"));
-				remainRect.style.flex = "1";
+						const fireworkSound = new Audio("yay.mp3"); // TODO: self-produced yay sound
 
-				const img = remainRect.appendChild(markerImage(name));
-				img.style.minHeight = "calc(100% - 3px)";
-				img.style.minWidth = "calc(100% - 3px)";
-				img.style.position = "relative";
-				img.style.top = "3px";
+						fireworkImg.addEventListener("load", () => {
+							const correct = fireworkOverlay.appendChild(document.createElement("span"));
+							correct.innerText = "RICHTIG";
+							correct.style.position = "absolute";
+							correct.style.transform = "translateX(-50%)";
+							correct.style.letterSpacing = "0.5em";
+							correct.style.fontWeight = "bold";
+							correct.style.textIndent = "0.5em";
+							correct.style.top = "10%";
+							correct.style.textShadow = "4px 4px 0px #000000";
 
-				const p = rect.appendChild(document.createElement("small"));
-				p.innerText = title;
-				p.style.padding = "3px";
-				p.style.flex = "0 1 auto";
-			};
-
-			const makeArrow = (color) => {
-				const arrow = timeCont.appendChild(document.createElement("div"));
-				arrow.style.position = "absolute";
-				arrow.style.width = "0";
-				arrow.style.height = "0";
-				arrow.style.borderTop = "20px solid transparent";
-				arrow.style.borderBottom = "20px solid transparent";
-				arrow.style.borderRight = "20px solid " + color;
-				arrow.style.left = "3em";
-				arrow.style.top = "calc(" + ((year-startYear) * pxPerYear) + "px - 20px + 1ex)";
-				return arrow;
-			};
-
-			makeArrow(color);
-
-			if (completed[name]) {
-				fillMarker();
-
-				if (name == marker.name) {
-					timeCont.scrollTo(rect); // TODO: lil color animation
-				}
-			} else {
-				const img = rect.appendChild(document.createElement("img"));
-				img.src = "unknown.svg";
-				img.style.position = "absolute";
-				img.style.width = "80%";
-				img.style.height = "80%";
-				img.style.top = "10%";
-				img.style.left = "10%";
-
-				if (!completed[marker.name]) {
-					img.addEventListener("click", () => {
-						if (onClose) return;
-
-						if (name == marker.name) {
-							rect.removeChild(img);
-							fillMarker();
-
-							// TODO
-						} else {
-							const rectOverlay = rect.appendChild(divOverlay());
-							const arrowOverlay = makeArrow("rgba(0, 0, 0, 0.5)");
-
-							const nope = rectOverlay.appendChild(document.createElement("img"));
-							nope.src = "nope.svg";
-							nope.position = "absolute";
-							nope.style.position = "absolute";
-							nope.style.width = "78%";
-							nope.style.height = "78%";
-							nope.style.top = "11%";
-							nope.style.left = "11%";
-
-							const nopeSound = new Audio("nope.mp3");
-							nopeSound.addEventListener("ended", () => {
-								onClose = null;
-								rect.removeChild(rectOverlay);
-								timeCont.removeChild(arrowOverlay);
+							fireworkSound.addEventListener("ended", () => {
+								assigned = true;
+								fireworkOverlay.remove();
+								rect.style.animation = "blink 0.6s 3";
 							});
-							nopeSound.play();
-							onClose = () => {
-								nopeSound.pause();
-							};
-						}
-					});
-				}
+							fireworkSound.play();
+						});
+					} else {
+						const rectOverlay = rect.appendChild(divOverlay());
+						const arrowOverlay = makeArrow("rgba(0, 0, 0, 0.5)");
+
+						const nope = rectOverlay.appendChild(document.createElement("img"));
+						nope.src = "nope.svg";
+						nope.position = "absolute";
+						nope.style.position = "absolute";
+						nope.style.width = "78%";
+						nope.style.height = "78%";
+						nope.style.top = "11%";
+						nope.style.left = "11%";
+
+						const nopeSound = new Audio("nope.mp3");
+						nopeSound.addEventListener("ended", () => {
+							rectOverlay.remove();
+							arrowOverlay.remove();
+						});
+						nopeSound.play();
+					}
+				});
 			}
 		}
+	}
+};
+
+const triggerMarker = (marker) => {
+	let finishAudio;
+
+	const audio = new Audio("markers/" + marker.name + "/sound.mp3");
+	audio.addEventListener("ended", () => {
+		finishAudio();
+	});
+	audio.play();
+
+	const { overlay, container, header, headline, addButton, body } = timelineSkeleton(marker.title, () => {
+		audio.pause();
+	});
+
+	const skip = addButton("Überspringen", () => {
+		audio.pause();
+		finishAudio();
+	});
+
+	const img = body.appendChild(markerImage(marker.name));
+
+	finishAudio = () => {
+		img.remove();
+		headline.remove();
+		skip.remove();
+
+		addButton("Nochmal anhören", () => {
+			overlay.remove();
+			triggerMarker(marker);
+		});
+
+		const help = header.insertBefore(document.createElement("p"), header.firstChild);
+		help.textAlign = "left";
+		help.style.width = "90%";
+
+		const updateHelp = () => {
+			help.innerHTML = completed[marker.name]
+				 ? `Du hast ${marker.title} in der Zeitleiste eingeordnet.`
+				 : `<b>Ordne ${marker.title} auf der Zeitleiste ein!</b>`;
+				 // <br> Scrolle oder verwende die 'Früher'- und 'Später'-Knöpfe um den richtigen Ausschnitt in der Zeitleiste zu finden, dann tippe auf das passende Fragezeichen!
+		};
+		updateHelp();
+
+		timeline({ marker, updateHelp, body });
 	};
 };
+
+document.getElementById("action-timeline").addEventListener("click", () => {
+	timeline({
+		body: timelineSkeleton("Zeitleiste").body,
+	});
+});
 
 const click = (evt) => {
 	const mouse = new THREE.Vector2(

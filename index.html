@@ -34,14 +34,6 @@
 				right: 0px;
 			}
 
-			button:hover {
-				background-image: linear-gradient(rgb(255 255 255/10%) 0 0);
-			}
-
-			button:active {
-				background-image: linear-gradient(rgb(255 255 255/30%) 0 0);
-			}
-
 			.actions {
 				position: fixed;
 				bottom: 0px;
@@ -69,8 +61,40 @@
 				filter: invert(55%) sepia(98%) saturate(322%) hue-rotate(43deg) brightness(97%) contrast(90%);
 			}
 
+			@keyframes blink {
+				0% {
+					opacity: 100%;
+				}
+				70% {
+					opacity: 0%;
+				}
+				100% {
+					opacity: 100%;
+				}
+			}
+
 			* {
 				font-family: exo;
+			}
+
+			.ui-button {
+				/*background-color: #bbeb82;
+				border-color: #7fb82e;
+				border-style: solid;*/
+				background-color: #7fb82e;
+				border-style: none;
+				font-size: 1em;
+				border-radius: 10px;
+				height: 2em;
+				cursor: pointer;
+			}
+
+			.ui-button:hover {
+				background-image: linear-gradient(rgb(255 255 255/10%) 0 0);
+			}
+
+			.ui-button:active {
+				background-image: linear-gradient(rgb(255 255 255/30%) 0 0);
 			}
 		</style>
 	</head>
@@ -80,7 +104,7 @@
 			<div class="action" id="action-info" style="position: relative;">
 				<img class="colorize" src="info.svg" width="85%" style="position: absolute; left: 7%; top: 7%;">
 			</div>
-			<div class="action" id="action-marker">
+			<div class="action" id="action-timeline">
 				<img class="colorize" src="marker.svg">
 			</div>
 		</div>

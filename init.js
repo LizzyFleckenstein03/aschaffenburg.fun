@@ -7,6 +7,7 @@ import * as SunCalc from "suncalc";
 import Color from "colorjs.io";
 
 const numFireworks = 10;
+const numYays = 7;
 
 // if something fishy happens to the local storage, errors on load could render the game unplayable
 // use try-catch to prevent this
@@ -596,7 +597,7 @@ Programm erhalten haben. Wenn nicht, siehe <a href="https://www.gnu.org/licenses
 			<li>markers/kronberg/image.jpg: Schülerzeichnung</li>
 			<li>markers/pilgerbrunnen/image.jpg: TODO</li>
 			<li>Fotos (markers/*/icon.png, fireworks/*.jpeg): Ruth Pabst</li>
-			<li>Gesprochene Texte (markers/*/sound.mp3): Schülerinnen und Schüler der Klasse 4a der Christian-Schad-Schule</li>
+			<li>Gesprochene Texte (markers/*/sound.mp3 yay/*.mp3): Schülerinnen und Schüler der Klasse 4a der Christian-Schad-Schule</li>
 		</ul>
 
 		<h3> Quellen verwendeter Medien</h3>
@@ -613,7 +614,6 @@ Programm erhalten haben. Wenn nicht, siehe <a href="https://www.gnu.org/licenses
 			<li><a href="https://de.wikipedia.org/wiki/Karl_Theodor_von_Dalberg#/media/Datei:Portrait_of_Karl_Theodor_von_Dalberg_by_Franz_Stirnbrand.jpg">markers/stadttheater/image.jpg</a></li>
 			<li><a href="https://de.wikipedia.org/wiki/Albrecht_von_Brandenburg#/media/Datei:Cardinal_Albrecht_of_Brandenburg_(DE_SPSG_GKI10219).jpg">markers/schoental_ruine/image.jpg</a></li>
 			<li><a href="https://www.myinstants.com/en/instant/wrong-answer-buzzer-6983/">nope.mp3</a></li>
-			<li><a href="https://www.myinstants.com/en/instant/yay_kids/">yay.mp3</a></li>
 		</ul>
 
 		<h3> Karten-Anbieter </h3>
@@ -1104,7 +1104,7 @@ const timeline = ({ marker, updateHelp, body }) => {
 						fireworkImg.style.transform = "translate(-50%, -50%)";
 						fireworkImg.style.borderStyle = "solid";
 
-						const fireworkSound = new Audio("yay.mp3"); // TODO: self-produced yay sound
+						const fireworkSound = new Audio("yay/yay_" + Math.floor(Math.random() * numYays) + ".mp3");
 
 						fireworkImg.addEventListener("load", () => {
 							const correct = fireworkOverlay.appendChild(

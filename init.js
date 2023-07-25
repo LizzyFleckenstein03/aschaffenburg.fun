@@ -4,7 +4,6 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
 import * as SunCalc from "suncalc";
-import { vec3, mat4, vec4 } from "gl-matrix";
 import Color from "colorjs.io";
 
 const numFireworks = 10;
@@ -54,24 +53,6 @@ const map = new maplibregl.Map({
 		"https://api.maptiler.com/maps/" +
 		(enable3d ? "streets-v2" : "bright") +
 		"/style.json?key=DOnvuOySyPyQM83lAx0a",
-	/*{
-			version: 8,
-			sources: {
-				osm: {
-					type: "raster",
-					tiles: ["https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"],
-					tileSize: 256,
-					// maxzoom: 21,
-				},
-			},
-			layers: [
-				{
-					id: "osm",
-					type: "raster",
-					source: "osm",
-				},
-			],
-		},*/
 });
 
 // hack. otherwise, zooming/rotating won't work while moving
@@ -234,9 +215,7 @@ new SVGLoader().load("marker-model.svg", (data) => {
 		const mesh = new THREE.Mesh(geometry, material);
 		mesh.scale.setScalar(1 / 1792);
 		mesh.position.set(-0.5, (1536 - 118.237) / 1792, i * 0.01);
-		//mesh.position.set(-0.5, 0, (1536 - 118.237) / 1792);
 		mesh.rotateX(Math.PI);
-		//mesh.rotateX(-Math.PI/2);
 		markerObj.add(mesh);
 	}
 
@@ -381,9 +360,6 @@ const setPlayerModel = async (model) => {
 
 	scene.add(player.scene);
 };
-
-window.playerModels = playerModels;
-window.setPlayerModel = setPlayerModel;
 
 const openContainer = (close, center) => {
 	const overlay = openOverlay(close);
@@ -656,8 +632,6 @@ Programm erhalten haben. Wenn nicht, siehe <a href="https://www.gnu.org/licenses
 	container.style.left = "calc(2.5% - 5px)";
 });
 
-window.modelSelectionUI = modelSelectionUI;
-
 // shadow plane
 {
 	const geometry = new THREE.PlaneGeometry(60 * playerScale, 60 * playerScale);
@@ -669,7 +643,6 @@ window.modelSelectionUI = modelSelectionUI;
 
 	const plane = new THREE.Mesh(geometry, material);
 	plane.receiveShadow = true;
-	//plane.position.set(0, -0.1, 0);
 	scene.add(plane);
 }
 
@@ -747,8 +720,8 @@ class Celestial extends THREE.DirectionalLight {
 	}
 
 	update() {
-		const date = new Date(new Date().getTime() + this.time * 1000 * 60 * 10);
-		//const date = new Date();
+		// const date = new Date(new Date().getTime() + this.time * 1000 * 60 * 10);
+		const date = new Date();
 
 		const pos = map.getCenter();
 		const p = this.positionFunc(date, pos.lat, pos.lng);
@@ -783,40 +756,8 @@ info.style.position = "absolute";
 info.style.zIndex = 5;
 info.style.color = "green";
 
-window.mapToMerc = mapToMerc;
-window.mat4 = mat4;
-window.vec3 = vec3;
-window.vec4 = vec4;
-window.mapToThree = mapToThree;
-window.camera = camera;
-window.map = map;
-
 const render = (gl, mercViewProj) => {
 	const cam = mapToThree(map.getCameraPosition());
-
-	window.mat = mercViewProj;
-
-	/*
-	camera.position.copy(cam);
-	camera.lookAt(scene.position);
-
-	const mercViewProjI = mat4.invert([], mercViewProj);
-
-	const depthNCDtoThree = (depth) => {
-		const [x, y, z] = vec3.transformMat4([], [0, 0, depth], mercViewProjI);
-		const pos = mercToThree({ x, y, z }).sub(threeCenter());
-
-		pos.applyMatrix4(camera.matrixWorldInverse);
-
-		return -pos.z;
-	};
-
-	camera.aspect = innerWidth / innerHeight;
-	camera.fov = map.transform.fov;
-	camera.near = depthNCDtoThree(-1);
-	camera.far = depthNCDtoThree(+1);
-	camera.updateProjectionMatrix();
-	*/
 
 	const p = mapToMerc(map.getCenter());
 	const s = p.meterInMercatorCoordinateUnits();

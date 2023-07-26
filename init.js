@@ -556,9 +556,10 @@ document.getElementById("action-info").addEventListener("click", () => {
 		`
 		<h2> Entwicklung </h2>
 		<ulasd>
-			<span> <b>Idee und Leitung:</b> Ruth Pabst </span><br>
-			<span> <b>Programmierung und Design:</b> Charlotte Pabst (Pseudonym: "Lizzy Fleckenstein") </span><br>
-			<span> <b>Inhalte:</b> Schülerinnen und Schüler der Klasse 4a der Christian-Schad-Schule</span><br>
+			<span><b>Idee und Leitung:</b> Ruth Pabst</span><br>
+			<span><b>Inhalte:</b> Schülerinnen und Schüler der Klasse 4a der Christian-Schad-Schule</span><br>
+			<span><b>Programmierung und Design:</b> Charlotte Pabst (Pseudonym: "Lizzy Fleckenstein")</span><br>
+			<span><b>Bild- und Soundbearbeitung:</b> Andreas Pabst</span><br>
 		</ul>
 		<p>
 			Der Quelltext des Programms steht unter
@@ -587,18 +588,8 @@ Programm erhalten haben. Wenn nicht, siehe <a href="https://www.gnu.org/licenses
 		${modelLicenses}
 		</ul>
 
-		<h3> Quellen eigener Medien </h3>
-		<p> Lizenz für inkludierte Medien: CC BY-SA 4.0 </p>
-		<ul>
-			<li>markers/stiftskirche/image.jpg: Schülerzeichnung</li>
-			<li>markers/willigis_bruecke/image.jpg: Schülerzeichnung</li>
-			<li>markers/altstadt/image.jpg: Schülerzeichnung</li>
-			<li>markers/pompejanum/image.jpg: Schülerzeichnung</li>
-			<li>markers/kronberg/image.jpg: Schülerzeichnung</li>
-			<li>markers/pilgerbrunnen/image.jpg: TODO</li>
-			<li>Fotos (markers/*/icon.png, fireworks/*.jpeg): Ruth Pabst</li>
-			<li>Gesprochene Texte (markers/*/sound.mp3 yay/*.mp3): Schülerinnen und Schüler der Klasse 4a der Christian-Schad-Schule</li>
-		</ul>
+		<h3> Medienlizenz </h3>
+		<p>Alle Inhalte in den 'markers', 'yay' und 'fireworks' Ordnern wurden von Schülerinnen und Schülern bzw. Ruth Pabst erstellt und werden unter CC BY-SA 4.0 zur Verfügung gestellt. </p>
 
 		<h3> Quellen verwendeter Medien</h3>
 		<ul>
@@ -609,10 +600,6 @@ Programm erhalten haben. Wenn nicht, siehe <a href="https://www.gnu.org/licenses
 			<li><a href="https://de.m.wikipedia.org/wiki/Datei:Map_marker_font_awesome.svg">marker.svg</a></li>
 			<li><a href="https://de.m.wikipedia.org/wiki/Datei:Map_marker_font_awesome.svg">marker-model.svg</a> (modifiziert)</li>
 			<li><a href="https://de.wikipedia.org/wiki/Aschaffenburg#/media/Datei:Wappen_Aschaffenburg.svg">favicon.ico</a> (zu PNG konvertiert)</li>
-			<li><a href="https://de.wikipedia.org/wiki/Georg_Ridinger#/media/Datei:Georg_Ridinger.jpg">markers/schloss/image.jpg</a></li>
-			<li><a href="https://de.wikipedia.org/wiki/Friedrich_Karl_Joseph_von_Erthal#/media/Datei:Friedrich_Carl_von_Erthal.jpg">markers/schoental/image.jpg</a></li>
-			<li><a href="https://de.wikipedia.org/wiki/Karl_Theodor_von_Dalberg#/media/Datei:Portrait_of_Karl_Theodor_von_Dalberg_by_Franz_Stirnbrand.jpg">markers/stadttheater/image.jpg</a></li>
-			<li><a href="https://de.wikipedia.org/wiki/Albrecht_von_Brandenburg#/media/Datei:Cardinal_Albrecht_of_Brandenburg_(DE_SPSG_GKI10219).jpg">markers/schoental_ruine/image.jpg</a></li>
 			<li><a href="https://www.myinstants.com/en/instant/wrong-answer-buzzer-6983/">nope.mp3</a></li>
 		</ul>
 
@@ -923,7 +910,7 @@ const timelineSkeleton = (title, close) => {
 const markerImage = (name) => {
 	const img = document.createElement("img");
 	img.alt = "Lädt...";
-	img.src = "markers/" + name + "/image.jpg";
+	img.src = "markers/" + name + "/image.png";
 	img.style.height = "0";
 	img.style.minHeight = "90%";
 	img.style.width = "0";

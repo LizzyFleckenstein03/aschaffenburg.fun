@@ -172,6 +172,7 @@ const markers = [
 		pos: { lng: 9.145791266971258, lat: 49.97387844558844 },
 		year: 1700,
 	},
+/*
 	{
 		title: "Friedrich Carl von Erthal",
 		name: "schoental",
@@ -184,6 +185,7 @@ const markers = [
 		pos: { lng: 9.144483317758414, lat: 49.9744341620889 },
 		year: 1811,
 	},
+*/
 	{
 		title: "Ludwig I von Bayern",
 		name: "pompejanum",

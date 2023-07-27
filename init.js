@@ -197,7 +197,7 @@ const markers = [
 new SVGLoader().load("marker-model.svg", (data) => {
 	const markerObj = new THREE.Group();
 	const material = new THREE.MeshBasicMaterial({
-		color: new THREE.Color(0),
+		color: new THREE.Color(),
 		side: THREE.DoubleSide,
 		depthWrite: true,
 		transparent: false,
@@ -215,7 +215,7 @@ new SVGLoader().load("marker-model.svg", (data) => {
 		.entries()) {
 		const geometry = new THREE.ShapeGeometry(shape);
 		setUV(geometry);
-		const mesh = new THREE.Mesh(geometry, material);
+		const mesh = new THREE.Mesh(geometry);
 		mesh.scale.setScalar(1 / 1792);
 		mesh.position.set(-0.5, (1536 - 118.237) / 1792, i * 0.01);
 		mesh.rotateX(Math.PI);
@@ -227,16 +227,19 @@ new SVGLoader().load("marker-model.svg", (data) => {
 	for (const marker of markers) {
 		marker.obj = markerObj.clone();
 		marker.obj.marker = marker;
-		for (const child of marker.obj.children)
-			child.material = child.material.clone();
 
 		const texture = textures.load("markers/" + marker.name + "/icon.png");
 		texture.flipY = false;
 		texture.colorSpace = THREE.SRGBColorSpace;
 
-		const material = marker.obj.children[1].material;
-		material.map = texture;
-		material.color = new THREE.Color();
+		const ch = marker.obj.children;
+
+		ch[0].material = material.clone();
+		ch[1].material = material;
+
+		const mat = ch[2].material = material.clone();
+		mat.map = texture;
+		mat.transparent = true;
 
 		scene.add(marker.obj);
 	}
@@ -244,8 +247,6 @@ new SVGLoader().load("marker-model.svg", (data) => {
 
 const clamp = (min, max, x) => Math.min(max, Math.max(min, x));
 const rlerp = (min, max, x) => clamp(0, 1, (x - min) / (max - min));
-
-const gradient = new Color("yellow").range(new Color("blue"));
 
 const mapToMerc = maplibregl.MercatorCoordinate.fromLngLat;
 

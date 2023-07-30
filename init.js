@@ -215,7 +215,7 @@ new SVGLoader().load("marker-model.svg", (data) => {
 		setUV(geometry);
 		const mesh = new THREE.Mesh(geometry);
 		mesh.scale.setScalar(1 / 1792);
-		mesh.position.set(-0.5, (1536 - 118.237) / 1792, i * 0.01);
+		mesh.position.set(-0.5, (1536 - 118.237) / 1792, i * 0.001);
 		mesh.rotateX(Math.PI);
 		markerObj.add(mesh);
 	}

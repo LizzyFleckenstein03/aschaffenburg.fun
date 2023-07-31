@@ -5,9 +5,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
 import * as SunCalc from "suncalc";
 import Color from "colorjs.io";
-
-const numFireworks = 10;
-const numYays = 7;
+import { yays, fireworks, models, markers } from "./assets.json";
 
 // if something fishy happens to the local storage, errors on load could render the game unplayable
 // use try-catch to prevent this
@@ -130,69 +128,6 @@ const setUV = (geometry) => {
 	geometry.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
 };
 
-const markers = [
-	{
-		title: "Liudolf",
-		name: "stiftskirche",
-		pos: { lng: 9.146006727402352, lat: 49.973420131538234 },
-		year: 950,
-	},
-	{
-		title: "Willigis",
-		name: "willigis_bruecke",
-		pos: { lng: 9.141077866185924, lat: 49.97184032912233 },
-		year: 989,
-	},
-	{
-		title: "Hund Otto",
-		name: "altstadt",
-		pos: { lng: 9.143238557511694, lat: 49.973269579558774 },
-		year: 1122,
-	},
-	{
-		title: "Albrecht von Brandenburg",
-		name: "schoental_ruine",
-		pos: { lng: 9.151180069019205, lat: 49.97534736445891 },
-		year: 1544,
-	},
-	{
-		title: "Georg Ridinger",
-		name: "schloss",
-		pos: { lng: 9.142131607183956, lat: 49.9755936415456 },
-		year: 1605,
-	},
-	{
-		title: "Johann Schweickard von Kronberg",
-		name: "kronberg",
-		pos: { lng: 9.143592104550777, lat: 49.97546881166781 },
-		year: 1620,
-	},
-	{
-		title: "Pilger",
-		name: "pilgerbrunnen",
-		pos: { lng: 9.145791266971258, lat: 49.97387844558844 },
-		year: 1700,
-	},
-	{
-		title: "Friedrich Carl von Erthal",
-		name: "schoental",
-		pos: { lng: 9.153218714184447, lat: 49.97449013687282 },
-		year: 1775,
-	},
-	{
-		title: "Karl Theodor von Dalberg",
-		name: "stadttheater",
-		pos: { lng: 9.144483317758414, lat: 49.9744341620889 },
-		year: 1811,
-	},
-	{
-		title: "Ludwig I von Bayern",
-		name: "pompejanum",
-		pos: { lng: 9.136472355974632, lat: 49.97739471769839 },
-		year: 1840,
-	},
-];
-
 new SVGLoader().load("marker-model.svg", (data) => {
 	const markerObj = new THREE.Group();
 	const material = new THREE.MeshBasicMaterial({
@@ -261,58 +196,7 @@ const mapToThree = (lngLat) =>
 
 let player;
 
-const playerModels = [
-	{
-		name: "Mei",
-		scale: 3.0,
-	},
-	{
-		name: "Paul",
-		scale: 1.5,
-	},
-	{
-		name: "Sonic",
-		scale: 1.5,
-	},
-	{
-		name: "Naruto",
-		scale: 3.0,
-		animationIndex: 4,
-		doStop: true,
-	},
-	{
-		name: "Luoli",
-		scale: 0.03,
-		doStop: true,
-	},
-	{
-		name: "Timo",
-		scale: 1.0,
-		hook: (player) => {
-			player.scene.traverse((child) => {
-				if (
-					child.name in
-					{
-						base: true,
-						lamppost: true,
-						space: true,
-					}
-				)
-					child.visible = false;
-			});
-
-			player.scene.rotateY(Math.PI);
-
-			const grp = new THREE.Group();
-			grp.add(player.scene);
-			player.scene = grp;
-
-			player.walk.timeScale = 2;
-		},
-	},
-];
-
-for (const m of playerModels) m.path = "models/" + m.name.toLowerCase() + "/";
+for (const m of models) m.path = "models/" + m.name.toLowerCase() + "/";
 
 const setPlayerModel = async (model) => {
 	const gltf = await new Promise((res, rej) => {
@@ -332,7 +216,12 @@ const setPlayerModel = async (model) => {
 	player.doStop = model.doStop;
 
 	player.scene.traverse((child) => {
-		if (child.isMesh) {
+		if (
+			model.removeChildren &&
+			model.removeChildren.indexOf(child.name) != -1
+		) {
+			child.visible = false;
+		} else if (child.isMesh) {
 			(child.material.isMaterial ? [child.material] : child.material).forEach(
 				(m) => {
 					m.castShadow = true;
@@ -357,9 +246,17 @@ const setPlayerModel = async (model) => {
 		player.animations[model.animationIndex || 0],
 	);
 
-	if (model.hook) model.hook(player);
+	if (model.timeScale) player.walk.timeScale = model.timeScale;
 
 	if (!player.doStop) player.walk.play();
+
+	if (model.rotateY) {
+		player.scene.rotateY(Math.PI);
+
+		const grp = new THREE.Group();
+		grp.add(player.scene);
+		player.scene = grp;
+	}
 
 	scene.add(player.scene);
 };
@@ -407,7 +304,7 @@ const modelSelectionUI = (canClose) => {
 
 	let clicked = false;
 	let tr;
-	for (const [i, model] of playerModels.entries()) {
+	for (const [i, model] of models.entries()) {
 		if (i % perRow == 0) {
 			tr = table.appendChild(document.createElement("tr"));
 		}
@@ -447,7 +344,7 @@ const modelSelectionUI = (canClose) => {
 		img.src = model.path + "preview.png";
 		img.style.width = "100%";
 		img.style.maxWidth = 100 / perRow + "%";
-		img.style.maxHeight = 70 / Math.ceil(playerModels.length / perRow) + "vh";
+		img.style.maxHeight = 70 / Math.ceil(models.length / perRow) + "vh";
 
 		td.appendChild(document.createElement("p")).innerText = model.name;
 	}
@@ -460,7 +357,7 @@ const modelSelectionUI = (canClose) => {
 	});
 
 	const modelName = localStorage.getItem("model");
-	const model = modelName && playerModels.find((m) => m.name == modelName);
+	const model = modelName && models.find((m) => m.name == modelName);
 
 	if (model) setPlayerModel(model);
 	else modelSelectionUI();
@@ -572,7 +469,7 @@ document.getElementById("action-settings").addEventListener("click", () => {
 import licenseFile from "./LICENSE?url";
 
 document.getElementById("action-info").addEventListener("click", () => {
-	const modelLicenses = playerModels
+	const modelLicenses = models
 		.map(
 			({ name, path }) => `<li><a href="${path}license.txt">${name}</a></li>`,
 		)
@@ -1115,7 +1012,7 @@ const timeline = ({ marker, updateHelp, body }) => {
 						);
 						fireworkImg.src =
 							"fireworks/firework_" +
-							Math.floor(Math.random() * numFireworks) +
+							Math.floor(Math.random() * fireworks) +
 							".jpeg";
 						fireworkImg.alt = "Lädt...";
 						fireworkImg.style.maxWidth = "90%";
@@ -1127,7 +1024,7 @@ const timeline = ({ marker, updateHelp, body }) => {
 						fireworkImg.style.borderStyle = "solid";
 
 						const fireworkSound = new Audio(
-							"yay/yay_" + Math.floor(Math.random() * numYays) + ".mp3",
+							"yay/yay_" + Math.floor(Math.random() * yays) + ".mp3",
 						);
 
 						fireworkImg.addEventListener("load", () => {

@@ -510,9 +510,9 @@ document.getElementById("action-settings").addEventListener("click", () => {
 		<p>Wenn du das Spiel von vorne beginnen möchtest, kannst du hier den Fortschritt zurücksetzen. Alle Marker sind danach wieder als unbekannt markiert.</p>
 		<button id="reset-progress" style="padding: 0 1em 0 1em" class="ui-button button-overlay">Fortschritt zurücksetzen</button>
 
-		<h2>Spiel neuladen</h2>
-		<p>Wenn das Spiel einen Fehler hat, kann es unter Umständen helfen, es neu zu laden. Dazu kannst du die Seite neuladen oder diesen Knopf verwenden. Dein Fortschritt bleibt dabei erhalten.</p>
-		<button id="reload-game" style="padding: 0 1em 0 1em" class="ui-button button-overlay">Spiel neuladen</button>
+		<h2>Spiel neu laden</h2>
+		<p>Wenn das Spiel ein Problem oder Fehler hat, kann es unter Umständen helfen, es neu zu laden. Dazu kannst du die Seite neu laden oder diesen Knopf verwenden. Dein Fortschritt bleibt dabei erhalten.</p>
+		<button id="reload-game" style="padding: 0 1em 0 1em" class="ui-button button-overlay">Spiel neu laden</button>
 
 		<h2>3D-Modus</h2>
 		<p>Im 3D-Modus werden Gebäude dreidimensional auf der Karte angezeigt. Auf leistungsschwachen Geräten kann das zu Leistungsproblemen führen. Nach Änderung dieser Einstellung wird das Spiel neu geladen.</p>
@@ -536,9 +536,9 @@ document.getElementById("action-settings").addEventListener("click", () => {
 
 	const updateCloseButton = () => {
 		if (boxEnable3d.checked != enable3d)
-			buttonClose.innerText = "Speichern und Neuladen";
+			buttonClose.innerText = "Speichern und neu laden";
 		else if (boxTouchControl.checked != touchControl())
-			buttonClose.innerText = "Speichern und Schließen";
+			buttonClose.innerText = "Speichern und schließen";
 		else buttonClose.innerText = "Schließen";
 	};
 
@@ -600,9 +600,9 @@ der GNU General Public License, wie von der Free Software Foundation,
 Version 3 der Lizenz oder (nach Ihrer Wahl) jeder neueren
 veröffentlichten Version, weiter verteilen und/oder modifizieren.
 
-Dieses Programm wird in der Hoffnung bereitgestellt, dass es nützlich sein wird, jedoch
-OHNE JEDE GEWÄHR,; sogar ohne die implizite
-Gewähr der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.
+Dieses Programm wird in der Hoffnung, dass es nützlich sein wird, jedoch
+OHNE JEDE GEWÄHRLEISTUNG, bereitgestellt; sogar ohne die implizite
+Gewährleistung der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.
 Siehe die GNU General Public License für weitere Einzelheiten.
 
 Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
@@ -1204,7 +1204,7 @@ const triggerMarker = (marker) => {
 
 		const updateHelp = () => {
 			help.innerHTML = completed[marker.name]
-				? `Du hast ${marker.title} in der Zeitleiste eingeordnet.`
+				? `Du hast ${marker.title} auf der Zeitleiste eingeordnet.`
 				: `<b>Ordne ${marker.title} auf der Zeitleiste ein!</b>`;
 			// <br> Scrolle oder verwende die 'Früher'- und 'Später'-Knöpfe um den richtigen Ausschnitt in der Zeitleiste zu finden, dann tippe auf das passende Fragezeichen!
 		};

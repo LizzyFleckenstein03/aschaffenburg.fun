@@ -581,6 +581,18 @@ document.getElementById("action-info").addEventListener("click", () => {
 	scrollContainer(
 		"Informationen zum Spiel",
 		`
+		<h2> Über das Spiel </h2>
+		<p> Du kannst bei diesem Spiel Figuren der Stadtgeschichte Aschaffenburgs entdecken, ihnen zuhören und sie dann in eine Zeitleiste einordnen. </p>
+		<p> Wähle eine Spielerfigur und zoome mit zwei Fingern den Stadtplan und suche nach den hellblauen Icons. Dann kannst du zu einem Icon hinlaufen und es anklicken. </p>
+		<p> Alternativ kannst du auch unter "Einstellungen" die Berührfunktion wählen. In diesem Fall musst du nur auf die Stelle im Stadtplan klicken, wo die Figur hinlaufen soll.
+		<p> Wenn du das Icon angeklickt hast, erscheint ein Bild der Figur und trägt dir etwas über sich und das Gebäude, vor dem du stehst vor. Pass gut auf, und merke dir die Jahreszahl. Wenn die Figur fertig gesprochen hat, erscheint eine Zeitleiste. Du kannst in der Zeitleiste nach oben und unten scrollen. Ordne deine Figur dem passenden Feld zu. </p>
+		<p>
+			Wenn du unsicher bist, kannst du dir den Text noch einmal anhören. <br>
+			Wenn du falsch antwortest, kannst du es noch einmal probieren. <br>
+			Wenn du richtig geantwortet hast, bekommst du ein tolles Feuerwerk zur Belohnung. <br>
+		</p>
+		<p> Über "Schließen" kannst du die Zeitleiste wieder schließen und weiter spielen. </p>
+		<p> Ziel des Spiel ist es alle 10 Figuren einzuordnen. </p>
 		<h2> Entwicklung </h2>
 		<p><b>Idee und Leitung:</b> Ruth Pabst</p>
 		<p><b>Inhalte:</b> Schülerinnen und Schüler der Klasse 4a der Christian-Schad-Schule:
@@ -1316,4 +1328,4 @@ const watchGeo = navigator.geolocation.watchPosition(
 	},
 );
 
-// ❤️ anna
+// ❤︎ anna

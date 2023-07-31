@@ -104,6 +104,7 @@ const openOverlay = (close) => {
 	overlay.style.width = "100%";
 	overlay.style.height = "100%";
 	overlay.style.backgroundColor = "rgba(0, 0, 0, 0.3)";
+	overlay.style.zIndex = "1";
 	if (close)
 		overlay.addEventListener("click", (evt) => {
 			if (evt.target != overlay) return;
@@ -367,11 +368,7 @@ const openContainer = (close, center) => {
 	const overlay = openOverlay(close);
 
 	const container = overlay.appendChild(document.createElement("div"));
-	container.style.backgroundColor = "#e4edd7";
-	container.style.borderColor = "#7fb82e";
-	container.style.borderStyle = "solid";
-	container.style.borderRadius = "10px";
-	container.style.borderWidth = "4px";
+	container.classList.add("ui-container");
 	container.style.position = "absolute";
 	container.style.width = "90%";
 	container.style.left = "5%";
@@ -871,6 +868,26 @@ const setTarget = (pos) => {
 	localStorage.setItem("position", JSON.stringify((target = pos)));
 };
 
+const buttonRow = (parent) => {
+	const buttons = parent.appendChild(document.createElement("div"));
+	buttons.style.display = "flex";
+	buttons.style.flexDirection = "row";
+	buttons.style.justifyContent = "center";
+	buttons.style.gap = "5px";
+
+	const addButton = (text, cb) => {
+		const button = buttons.appendChild(document.createElement("button"));
+		button.innerText = text;
+		button.style.flex = "1";
+		button.classList.add("ui-button");
+		button.classList.add("button-overlay");
+		button.addEventListener("click", cb);
+		return button;
+	};
+
+	return [buttons, addButton];
+};
+
 const timelineSkeleton = (title, close) => {
 	const [overlay, container] = openContainer(close);
 	container.style.width = "calc(100% - 30px)";
@@ -887,23 +904,9 @@ const timelineSkeleton = (title, close) => {
 	headline.style.flex = "0 1 auto";
 	headline.style.width = "90%";
 
-	const buttons = header.appendChild(document.createElement("div"));
-	buttons.style.width = "90%";
-	buttons.style.display = "flex";
-	buttons.style.flexDirection = "row";
-	buttons.style.justifyContent = "center";
-	buttons.style.gap = "5px";
+	const [buttons, addButton] = buttonRow(header);
 	buttons.style.marginBottom = "0.5em";
-
-	const addButton = (text, cb) => {
-		const button = buttons.appendChild(document.createElement("button"));
-		button.innerText = text;
-		button.style.flex = "1";
-		button.classList.add("ui-button");
-		button.classList.add("button-overlay");
-		button.addEventListener("click", cb);
-		return button;
-	};
+	buttons.style.width = "90%";
 
 	addButton("Schließen", () => {
 		close?.();
@@ -1243,10 +1246,59 @@ map.on("touched", click);
 const watchGeo = navigator.geolocation.watchPosition(
 	({ coords: { longitude: lng, latitude: lat } }) => {
 		if (!touchControl()) setTarget({ lng, lat });
+		localStorage.removeItem("touchControlOpt");
 	},
 	(err) => {
 		navigator.geolocation.clearWatch(watchGeo);
 		gpsError = err;
+
+		if (localStorage.getItem("touchControlOpt") == "true") return;
+
+		const errBox = document.body.appendChild(document.createElement("div"));
+		errBox.style.position = "fixed";
+		errBox.style.top = "5px";
+		errBox.style.left = "5px";
+		errBox.style.width = "calc(100% - 10px - 8px)";
+		errBox.classList.add("ui-container");
+		errBox.style.zIndex = "0";
+
+		const headCont = errBox.appendChild(document.createElement("div"));
+		headCont.style.display = "flex";
+		headCont.style.alignItems = "center";
+		headCont.style.margin = "8px";
+
+		const img = headCont.appendChild(document.createElement("img"));
+		img.style.width = "4em";
+		img.src = "info.svg";
+		img.classList.add("colorize");
+
+		const text = headCont.appendChild(document.createElement("div"));
+		text.style.paddingLeft = "0.5em";
+
+		const h1 = text.appendChild(document.createElement("h1"));
+		h1.innerText = "Standortinformation nicht verfügbar";
+		h1.style.padding = "0";
+		h1.style.margin = "0";
+		h1.style.fontSize = "1.1em";
+		h1.style.paddingBotton = "0.2em";
+
+		const p = text.appendChild(document.createElement("p"));
+		p.style.padding = "";
+		p.style.margin = "0";
+		p.style.fontSize = "0.9em";
+		p.innerText =
+			"Stelle sicher, dass diese Seite die Erlaubnis hat, auf deinen Standort zuzugreifen oder verwende stattdessen die Berührsteuerung.";
+
+		const [buttons, addButton] = buttonRow(errBox);
+		buttons.style.margin = "8px";
+
+		addButton("Erneut versuchen", () => {
+			location.reload();
+		});
+		addButton("Berührsteuerung", () => {
+			errBox.remove();
+			localStorage.setItem("touchControlOpt", "true");
+		});
 	},
 	{
 		enableHighAccuracy: true,

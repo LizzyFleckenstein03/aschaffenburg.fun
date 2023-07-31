@@ -466,22 +466,15 @@ const modelSelectionUI = (canClose) => {
 	else modelSelectionUI();
 }
 
-const htmlContainer = (headline, htmlContent) => {
+const scrollContainer = (headline, htmlContent) => {
 	const [overlay, container] = openContainer(true, true);
+	container.style.height = "90%";
 
-	container.appendChild(document.createElement("h1")).innerText = headline;
-	container.style.maxHeight = "90%";
-	container.style.overflow = "scroll";
-	container.style.scrollbarColor = "#7fb82e #e4edd7";
-
-	const content = container.appendChild(document.createElement("div"));
-	content.style.width = "90%";
-	content.style.textAlign = "left";
-	content.innerHTML = htmlContent;
-
-	const close = content.appendChild(document.createElement("button"));
-	close.style.width = "100%";
-	close.style.margin = "2ex 0 2ex 0";
+	const close = container.appendChild(document.createElement("button"));
+	close.style.position = "absolute";
+	close.style.bottom = "5px";
+	close.style.left = "5px";
+	close.style.width = "calc(100% - 10px)";
 	close.classList.add("ui-button");
 	close.classList.add("button-overlay");
 	close.innerText = "Schließen";
@@ -489,11 +482,28 @@ const htmlContainer = (headline, htmlContent) => {
 		overlay.remove();
 	});
 
-	return [overlay, container, content, close];
+	const scroll = container.appendChild(document.createElement("div"));
+	scroll.style.overflowY = "scroll";
+	scroll.style.maxHeight = "calc(100% - 10px - 2em)";
+
+	const fade = scroll.appendChild(document.createElement("div"));
+	fade.classList.add("fading-edge");
+
+	const h1 = fade.appendChild(document.createElement("h1"));
+	h1.innerText = headline;
+
+	const content = fade.appendChild(document.createElement("div"));
+	content.style.width = "90%";
+	content.style.textAlign = "left";
+	content.style.marginBottom = "calc(4em + 2em + 5px)";
+	content.style.position = "relative";
+	content.innerHTML = htmlContent;
+
+	return [overlay, close];
 };
 
 document.getElementById("action-settings").addEventListener("click", () => {
-	const [overlay, container, content, buttonClose] = htmlContainer(
+	const [overlay, buttonClose] = scrollContainer(
 		"Einstellungen",
 		`
 		<h2>Fortschritt zurücksetzen</h2>
@@ -514,7 +524,7 @@ document.getElementById("action-settings").addEventListener("click", () => {
 		<p>Das Spiel kann entweder durch deinen Standort oder durch Berühren der Karte gesteuert werden. Falls dein Gerät keine Standortinformationen unterstützt, wird die Berührsteuerung automatisch eingeschaltet.</p>
 		<input type="checkbox" id="checkbox-touchcontrol">
 		<label for="checkbox-touchcontrol">Berührsteuerung verwenden</label>
-	`,
+		`,
 	);
 
 	const boxEnable3d = document.getElementById("checkbox-enable3d");
@@ -568,7 +578,7 @@ document.getElementById("action-info").addEventListener("click", () => {
 		)
 		.join("");
 
-	const [overlay, container, content] = htmlContainer(
+	scrollContainer(
 		"Informationen zum Spiel",
 		`
 		<h2> Entwicklung </h2>
@@ -620,7 +630,10 @@ Programm erhalten haben. Wenn nicht, siehe <a href="https://www.gnu.org/licenses
 		</ul>
 
 		<h3> Karten-Dienst </h3>
-		<a href="https://www.maptiler.com/copyright/">© MapTiler</a> <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors</a>`,
+		<a href="https://www.maptiler.com/copyright/">© MapTiler</a> <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors</a>
+
+		<br><br>
+		`,
 	);
 });
 
@@ -946,8 +959,7 @@ const timeline = ({ marker, updateHelp, body }) => {
 	inner.style.left = "4px";
 	inner.style.height = "calc(100% - 80px)";
 	inner.style.width = "calc(100% - 12px)";
-	inner.style.overflow = "auto";
-	inner.style.scrollbarColor = "#7fb82e #d9e9c6";
+	inner.style.overflowY = "scroll";
 	inner.style.direction = "rtl";
 
 	const pxPerYear = 5;

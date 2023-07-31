@@ -21,7 +21,7 @@ let target = storageParse("position") || {
 	lng: 9.142202119898826,
 	lat: 49.97692244755174,
 };
-const completed = storageParse("completed") || {};
+let completed = storageParse("completed") || {};
 const enable3d = localStorage.getItem("enable3d") != "false";
 let forceTouchControl = localStorage.getItem("touchcontrol") == "true";
 
@@ -235,7 +235,7 @@ new SVGLoader().load("marker-model.svg", (data) => {
 		ch[0].material = material.clone();
 		ch[1].material = material;
 
-		const mat = ch[2].material = material.clone();
+		const mat = (ch[2].material = material.clone());
 		mat.map = texture;
 		mat.transparent = true;
 
@@ -473,22 +473,42 @@ const htmlContainer = (headline, htmlContent) => {
 	const [overlay, container] = openContainer(true, true);
 
 	container.appendChild(document.createElement("h1")).innerText = headline;
+	container.style.maxHeight = "90%";
+	container.style.overflow = "scroll";
+	container.style.scrollbarColor = "#7fb82e #e4edd7";
 
 	const content = container.appendChild(document.createElement("div"));
 	content.style.width = "90%";
 	content.style.textAlign = "left";
-
 	content.innerHTML = htmlContent;
 
-	return [overlay, container, content];
+	const close = content.appendChild(document.createElement("button"));
+	close.style.width = "100%";
+	close.style.margin = "2ex 0 2ex 0";
+	close.classList.add("ui-button");
+	close.classList.add("button-overlay");
+	close.innerText = "Schließen";
+	close.addEventListener("click", () => {
+		overlay.remove();
+	});
+
+	return [overlay, container, content, close];
 };
 
 document.getElementById("action-settings").addEventListener("click", () => {
-	const [overlay, container, content] = htmlContainer(
+	const [overlay, container, content, buttonClose] = htmlContainer(
 		"Einstellungen",
 		`
+		<h2>Fortschritt zurücksetzen</h2>
+		<p>Wenn du das Spiel von vorne beginnen möchtest, kannst du hier den Fortschritt zurücksetzen. Alle Marker sind danach wieder als unbekannt markiert.</p>
+		<button id="reset-progress" style="padding: 0 1em 0 1em" class="ui-button button-overlay">Fortschritt zurücksetzen</button>
+
+		<h2>Spiel neuladen</h2>
+		<p>Wenn das Spiel einen Fehler hat, kann es unter Umständen helfen, es neu zu laden. Dazu kannst du die Seite neuladen oder diesen Knopf verwenden. Dein Fortschritt bleibt dabei erhalten.</p>
+		<button id="reload-game" style="padding: 0 1em 0 1em" class="ui-button button-overlay">Spiel neuladen</button>
+
 		<h2>3D-Modus</h2>
-		<p>Im 3D-Modus werden Gebäude dreidimensional auf der Karte angezeigt. Auf leistungsschwachen Geräten kann das zu Leistungsproblemen führen. Nach Änderung dieser Einstellung ist ein Neustart des Spiels notwendig.</p>
+		<p>Im 3D-Modus werden Gebäude dreidimensional auf der Karte angezeigt. Auf leistungsschwachen Geräten kann das zu Leistungsproblemen führen. Nach Änderung dieser Einstellung wird das Spiel neu geladen.</p>
 
 		<input type="checkbox" id="checkbox-enable3d">
 		<label for="checkbox-enable3d">3D-Modus einschalten</label>
@@ -497,18 +517,9 @@ document.getElementById("action-settings").addEventListener("click", () => {
 		<p>Das Spiel kann entweder durch deinen Standort oder durch Berühren der Karte gesteuert werden. Falls dein Gerät keine Standortinformationen unterstützt, wird die Berührsteuerung automatisch eingeschaltet.</p>
 		<input type="checkbox" id="checkbox-touchcontrol">
 		<label for="checkbox-touchcontrol">Berührsteuerung verwenden</label>
-
-		<br>
-		<br>
-
-		<button id="close-settings" style="width: 100%" class="ui-button button-overlay">Schließen</button>
-
-		<br>
-		<br>
 	`,
 	);
 
-	const buttonClose = document.getElementById("close-settings");
 	const boxEnable3d = document.getElementById("checkbox-enable3d");
 	const boxTouchControl = document.getElementById("checkbox-touchcontrol");
 
@@ -518,7 +529,7 @@ document.getElementById("action-settings").addEventListener("click", () => {
 
 	const updateCloseButton = () => {
 		if (boxEnable3d.checked != enable3d)
-			buttonClose.innerText = "Speichern und Neustarten";
+			buttonClose.innerText = "Speichern und Neuladen";
 		else if (boxTouchControl.checked != touchControl())
 			buttonClose.innerText = "Speichern und Schließen";
 		else buttonClose.innerText = "Schließen";
@@ -535,11 +546,19 @@ document.getElementById("action-settings").addEventListener("click", () => {
 				(forceTouchControl = boxTouchControl.checked).toString(),
 			);
 
-		if (boxEnable3d.checked != enable3d) {
-			location.reload();
-		} else {
+		if (boxEnable3d.checked != enable3d) location.reload();
+	});
+
+	document.getElementById("reset-progress").addEventListener("click", () => {
+		if (confirm("Möchtest du deinen Fortschritt zurücksetzen?")) {
+			localStorage.setItem("completed", JSON.stringify((completed = {})));
+			alert("Fortschritt zurückgesetzt.");
 			overlay.remove();
 		}
+	});
+
+	document.getElementById("reload-game").addEventListener("click", () => {
+		location.reload();
 	});
 });
 
@@ -563,9 +582,9 @@ document.getElementById("action-info").addEventListener("click", () => {
 			<span><b>Bild- und Soundbearbeitung:</b> Andreas Pabst</span><br>
 		</ul>
 		<p>
-			Der Quelltext des Programms steht unter
+			Der Quelltext des Programms steht auf
 			<a href="https://github.com/LizzyFleckenstein03/aschaffenburg.fun">
-				https://github.com/LizzyFleckenstein03/aschaffenburg.fun</a>
+				GitHub</a>
 			zur Verfügung.</p>
 		<h2> Lizenzinformationen </h2>
 		<h3> Quellcodelizenz: <a href="${licenseFile}">GPLv3</a></h3>
@@ -604,20 +623,9 @@ Programm erhalten haben. Wenn nicht, siehe <a href="https://www.gnu.org/licenses
 			<li><a href="https://www.myinstants.com/en/instant/wrong-answer-buzzer-6983/">nope.mp3</a></li>
 		</ul>
 
-		<h3> Karten-Anbieter </h3>
-		<a href="https://www.maptiler.com/copyright/">© MapTiler</a> <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors</a>
-
-		<br><br>
-	`,
+		<h3> Karten-Dienst </h3>
+		<a href="https://www.maptiler.com/copyright/">© MapTiler</a> <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors</a>`,
 	);
-
-	//
-
-	container.style.scrollbarColor = "#7fb82e #e4edd7";
-	container.style.height = "90%";
-	container.style.overflow = "scroll";
-	container.style.width = "95%";
-	container.style.left = "calc(2.5% - 5px)";
 });
 
 // shadow plane
@@ -1092,7 +1100,9 @@ const timeline = ({ marker, updateHelp, body }) => {
 						fireworkImg.style.transform = "translate(-50%, -50%)";
 						fireworkImg.style.borderStyle = "solid";
 
-						const fireworkSound = new Audio("yay/yay_" + Math.floor(Math.random() * numYays) + ".mp3");
+						const fireworkSound = new Audio(
+							"yay/yay_" + Math.floor(Math.random() * numYays) + ".mp3",
+						);
 
 						fireworkImg.addEventListener("load", () => {
 							const correct = fireworkOverlay.appendChild(

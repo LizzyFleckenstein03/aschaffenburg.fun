@@ -572,12 +572,11 @@ document.getElementById("action-info").addEventListener("click", () => {
 		"Informationen zum Spiel",
 		`
 		<h2> Entwicklung </h2>
-		<ulasd>
-			<span><b>Idee und Leitung:</b> Ruth Pabst</span><br>
-			<span><b>Inhalte:</b> Schülerinnen und Schüler der Klasse 4a der Christian-Schad-Schule</span><br>
-			<span><b>Programmierung und Design:</b> Charlotte Pabst (Pseudonym: "Lizzy Fleckenstein")</span><br>
-			<span><b>Bild- und Soundbearbeitung:</b> Andreas Pabst</span><br>
-		</ul>
+		<p><b>Idee und Leitung:</b> Ruth Pabst</p>
+		<p><b>Inhalte:</b> Schülerinnen und Schüler der Klasse 4a der Christian-Schad-Schule:
+			Alexia, Andreo, Inga, Leonard, Lukas, Mara, Noah, Polina, Raphael und andere
+		</p>
+		<p><b>Programmierung und Design:</b> Charlotte Pabst (Pseudonym: "Lizzy Fleckenstein")</p>
 		<p>
 			Der Quelltext des Programms steht auf
 			<a href="https://github.com/LizzyFleckenstein03/aschaffenburg.fun">

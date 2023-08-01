@@ -714,6 +714,10 @@ const render = (gl, mercViewProj) => {
 	map.triggerRepaint();
 };
 
+setInterval(() => {
+	map.resize();
+}, 1000);
+
 map.on("style.load", () => {
 	map.addLayer(
 		{

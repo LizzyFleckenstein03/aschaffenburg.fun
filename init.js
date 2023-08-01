@@ -492,6 +492,7 @@ document.getElementById("action-info").addEventListener("click", () => {
 		<p> Ziel des Spiel ist es alle 10 Figuren einzuordnen. </p>
 		<h2> Entwicklung </h2>
 		<p><b>Idee und Leitung:</b> Ruth Pabst</p>
+		<p><b>Unterstützung und Beratung:</b> Schulleitung der Christian-Schad-Grundschule Nilkheim</p>
 		<p><b>Inhalte:</b> Schülerinnen und Schüler der Klasse 4a der Christian-Schad-Schule:
 			Alexia, Andreo, Inga, Leonard, Lukas, Mara, Noah, Polina, Raphael und andere
 		</p>

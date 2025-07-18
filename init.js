@@ -739,7 +739,8 @@ map.on("style.load", () => {
 });
 
 addEventListener("resize", () => {
-	renderer.setSize(innerWidth, innerHeight);
+	const ratio = devicePixelRatio || 1;
+	renderer.setSize(innerWidth * ratio, innerHeight * ratio);
 });
 
 let playerAnimDuration = 0;
